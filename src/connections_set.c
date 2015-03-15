@@ -14,7 +14,7 @@ void initializeConnectionSet() {
 int getFirstConnection() {
 	int connection = -1;
 
-	for(int i = 0; i < maxConnection; ++i) {
+	for(int i = 0; i <= maxConnection; ++i) {
 		if(FD_ISSET(i, &connections)) {
 			connection = i;
 			break;
@@ -27,7 +27,7 @@ int getFirstConnection() {
 int getNextConnection(int curConnection) {
 	int connection = -1;
 
-	for(int i = curConnection + 1; i < maxConnection; ++i) {
+	for(int i = curConnection + 1; i <= maxConnection; ++i) {
 		if(FD_ISSET(i, &connections)) {
 			connection = i;
 			break;

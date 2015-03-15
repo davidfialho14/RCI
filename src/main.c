@@ -13,12 +13,16 @@
 #include "defines.h"
 #include "common.h"
 #include "communication.h"
+#include "connections_set.h"
 
 int main(int argc, char const *argv[]) {
 
 	//inicializacao
 	if(initializeCommunication(argc, argv) != 0) exit(-1); //inicailizacao falhou
 	putok("inicializacao completa\n");
+
+	//inicializar conjunto de ligacoes
+	initializeConnectionSet();
 
 	int maxFd = curNode.fd;	//descritor com valor mais elevado
 	char buffer[BUFSIZE];	//buffer utilizado para fazer a leitura dos descritores
@@ -27,14 +31,14 @@ int main(int argc, char const *argv[]) {
 	int quit = FALSE;
 	while(!quit) {
 
-		//inicializar conjunto de fds de leitura
+		//reinicializar conjunto de fds de leitura
 		FD_ZERO(&readFds);
-
+		//adicionar ligacoes no conjunto de fds
+		copySet(&readFds);
 		//adicionar listen fd ao conjunto de fds
 		FD_SET(curNode.fd, &readFds);
 		//adicionar stdin ao conjunto de fds
 		FD_SET(STDIN_FILENO, &readFds);
-		//adicionar fd das ligacoes existentes
 
 		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
@@ -42,6 +46,10 @@ int main(int argc, char const *argv[]) {
 						succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 		putdebug("PrediNode - id: %d ip: %s port: %s fd: %d",
 						prediNode.id, prediNode.ip, prediNode.port, prediNode.fd);
+
+		if(maxFd < getMaxConnection()) {
+			maxFd = getMaxConnection();
+		}
 
 		//esperar por descritor pronto para ler
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
@@ -61,8 +69,9 @@ int main(int argc, char const *argv[]) {
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
 				puterror("main", "ligacao nao foi aceite");
 			} else {
-				//adionar descritor ao conjunto de descritores de ligacao
 				putdebug("nova ligacao %d addr: %s", connectionFd, inet_ntoa(addr.sin_addr));
+				//adicionar descritor ao conjunto de descritores de ligacao
+				addConnection(connectionFd);
 			}
 		}
 
@@ -75,7 +84,29 @@ int main(int argc, char const *argv[]) {
 			putdebug("processar comando do utilizador");
 		}
 
-		//ler fds de ligacoes correntes
+		//ler fds de ligacoes actuais com o nó
+		int connectionFd = getFirstConnection();
+		while(connectionFd >= 0) {
+			if(FD_ISSET(connectionFd, &readFds)) {
+				putdebug("ligacao %d comunicou", connectionFd);
+
+				//limpar buffer de rececao
+				bzero(buffer, sizeof(buffer));
+
+				//ler mensagem
+				if(read(connectionFd, buffer, sizeof(buffer)) <= 0) {
+					close(connectionFd);		//fechar ligacao
+					rmConnection(connectionFd);	//remover no do conjunto de ligacoes
+					putok("ligacao %d terminada", connectionFd);
+				} else {
+					//tratar mensagem recebida
+					putok("mensagem recebida pela ligacao %d: %s", connectionFd, buffer);
+				}
+			}
+
+			//proxima ligacao
+			connectionFd = getNextConnection(connectionFd);
+		}
 	}
 
 	return 0;
