@@ -328,3 +328,85 @@ int registerAsStartingNode(int ringId, int nodeId) {
 	return error;
 }
 
+/**************************
+ * Comunicacao com os nós *
+ **************************/
+
+int connectToNode(const char *nodeAddress, const char *nodePort) {
+	int nodeFd = -1;
+
+	struct addrinfo hints;
+	bzero(&hints, sizeof(hints));
+	hints.ai_family = AF_INET; 			//permitir o uso de IPv4
+	hints.ai_socktype = SOCK_STREAM;	//definir como TCP
+
+	struct addrinfo *servinfo;			//lista de enderecos
+	//obter enderecos do succi
+	if (getaddrinfo(nodeAddress, nodePort, &hints, &servinfo) != 0) {
+		puterror("connectToNode", "getaddrinfo falhou");
+
+	} else {
+		//iterar pelos varios enderecos ate conseguir criar um socket e fazer connect
+		struct addrinfo *aux = servinfo;
+		while(aux != NULL) {
+			if( (nodeFd = socket(aux->ai_family,
+					aux->ai_socktype, aux->ai_protocol)) != -1) {
+				//criado um socket com sucesso
+				//ligar ao endereco
+				if(connect(nodeFd, aux->ai_addr,  aux->ai_addrlen) == -1) {
+					puterror("connectToNode", "connect falhou");
+					close(nodeFd);	//fechar socket criado
+					nodeFd = -1;
+				} else {
+					break;	//sair apos ligacao ter sido estabelecida
+				}
+			}
+			aux = aux->ai_next;
+		}
+
+		if(aux == NULL) {
+			puterror("connectToNode", "nao se conseguiu ligar a nenhum endereco");
+		}
+
+		//limpar recursos
+		freeaddrinfo(servinfo);
+	}
+
+	return nodeFd;
+}
+
+int sendMessageNEW(int fd) {
+	int error = -1;
+
+	//criar mensagem new
+	char message[BUFSIZE];
+	sprintf(message, "NEW %d %s %s\n", curNode.id, curNode.ip, curNode.port);
+
+	//enviar mensagem
+	if(write(fd, message, strlen(message)) <= 0) {
+		puterror("sendMessageNEW", "envio de mensagem NEW");
+	} else {
+		putok("mensagem NEW enviada: %s para fd %d", message, fd);
+		error = 0;
+	}
+
+	return error;
+}
+
+int sendMessageCON(int id, const char *ip, const char *port, int fd) {
+	int error = -1;
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "CON %d %s %s\n", id, ip, port);
+
+	//enviar mensagem ao predi
+	if(write(prediNode.fd, message, strlen(message)) <= 0) {
+		puterror("sendMessageCON", "envio de mensagem CON");
+	} else {
+		putok("mensagem CON enviada: %s para fd %d", message, fd);
+		error = 0;
+	}
+
+	return error;
+}
+

@@ -9,6 +9,8 @@
 
 extern int curRing;
 
+int executeDebugJoin(int ring, int nodeId,
+		int succiId, const char *succiAddress, const char *succiPort);
 int executeUserCommand(const char *input) {
 	int error = -1;
 
@@ -78,6 +80,78 @@ int executeUserCommand(const char *input) {
 
 	} else {
 		error = -1;
+	}
+
+	return error;
+}
+
+/*
+ * descricao:	executa um debug join
+ * argumentos:	ring - anel onde fazer join
+ * 				nodeId - id que o no pretende ter
+ * 				succiId - id do no succi a que o no se pretende ligar
+ * 				succiAddress - endereco do succi
+ * 				succiPort - porto do succi
+ * retorno:		retorna 0 em caso de sucesso e -1 em caso de erro
+ */
+int executeDebugJoin(int ring, int nodeId,
+		int succiId, const char *succiAddress, const char *succiPort) {
+	int error = -1;
+
+	if(curRing != -1) {
+		putwarning("o no ja esta registado no anel %d", curRing);
+		return -1;
+	}
+
+	Node startNode;		//vai ser ingorado
+	int errorCode = getStartNode(ring, &startNode);
+	if(errorCode == 0) {			//anel esta vazio
+
+		//registar nó como nó de arranque do anel
+		if(registerAsStartingNode(ring, nodeId) == -1) {
+			puterror("executeDebugJoin", "registo de no de arranque falhou");
+		} else {
+			putok("registado no anel %d com id %d", ring, nodeId);
+			//actualizar informacoes do nó tendo em conta que é o unico nó no anel
+			curRing = ring;						//definir anel do nó
+			succiNode.id = succiNode.fd = -1;	//succi ainda nao definido
+			curNode.id = nodeId;				//definir id do nó
+			prediNode.id = prediNode.fd = -1;	//predi ainda nao definido
+			error = 0;
+		}
+
+	} else  if(errorCode == 1){ 	//o anel nao esta vazio
+
+		//ligar ao succi introduzido
+		int succiFd = -1;
+		if( (succiFd = connectToNode(succiAddress, succiPort)) == -1) {
+			puterror("executeDebugJoin", "tentativa de ligacao com succi falhou");
+
+		} else {
+			putok("executeDebugJoin", "ligacao estabelecida com no %d %s %s",
+					nodeId, succiAddress, succiPort);
+			//definir no actual
+			curNode.id = nodeId;
+			curRing = ring;
+
+			//enviar informacoes do proprio no
+			if( (error = sendMessageNEW(succiFd)) == -1) {
+				puterror("executeDebugJoin", "envio de mensagem NEW para %d %s",
+						succiId, succiPort);
+			} else {
+				//definir succi introduzido como succi do no
+				succiNode.id = succiId;
+				strcpy(succiNode.ip, succiAddress);
+				strcpy(succiNode.port, succiPort);
+				succiNode.fd = succiFd;
+
+				putok("definido no succi %d %s %s %d",
+						succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
+			}
+		}
+
+	} else {
+		puterror("executeDebugJoin", "getStartNode falhou");
 	}
 
 	return error;

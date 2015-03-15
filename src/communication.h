@@ -59,4 +59,20 @@ int getStartNode(int ringId, Node* startNode);
 */
 int registerAsStartingNode(int ringId, int nodeId);
 
+/**************************
+ * Comunicacao com os nós *
+ **************************/
+
+/*
+ * 	descricao:	estabelece uma ligacao com um no dado o seu endereco e o seu porto
+ * 	argumentos:	nodeAddress - endereco do no
+ * 				nodePort - porto do no
+ * 	retorno:	descritor do socket criado para a comunicacao é retornado por valor
+ */
+int connectToNode(const char *nodeAddress, const char *nodePort);
+
+int sendMessageNEW(int fd);
+
+int sendMessageCON(int id, const char *ip, const char *port, int fd);
+
 #endif
