@@ -82,6 +82,13 @@ int main(int argc, char const *argv[]) {
 
 			//executar comando do utilizador
 			putdebug("processar comando do utilizador");
+
+			int errorCode = executeUserCommand(buffer);
+			switch(errorCode) {
+				case 0: 	putok("comando processado correctamente"); break;
+				case -1: 	puterror("main", "falha no processamento do comando"); break;
+				case 1:		quit = TRUE; continue;	//sair do programa
+			}
 		}
 
 		//ler fds de ligacoes actuais com o nó
@@ -101,6 +108,17 @@ int main(int argc, char const *argv[]) {
 				} else {
 					//tratar mensagem recebida
 					putok("mensagem recebida pela ligacao %d: %s", connectionFd, buffer);
+
+					//remover \n
+					int length = strlen(buffer);
+					if(buffer[length - 1] == '\n')
+						buffer[length - 1] = '\0';
+
+					if(handleMessage(buffer, connectionFd) == 0) {
+						putok("mensagem tratada com sucesso");
+					} else {
+						puterror("main", "mensagem falhou");
+					}
 				}
 			}
 

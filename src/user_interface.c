@@ -47,6 +47,10 @@ int executeUserCommand(const char *input) {
 			putok("comando join sem pesquisa: %s %d %d %d %s %s", command, ring, nodeId,
 					succiId, succiAddress, succiPort);
 
+			if( (error = executeDebugJoin(ring, nodeId, succiId, succiAddress, succiPort)) == -1) {
+				puterror("executeUserCommand", "debug join falhou");
+			}
+
 		} else {
 			putwarning("comando join invalido");
 		}
