@@ -10,6 +10,7 @@
 #include "connections_set.h"
 
 int executeNEW(int id, const char *ip, const char *port, int fd);
+int executeCON(int id, const char *ip, const char *port, int fd);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -38,11 +39,13 @@ int handleMessage(const char* message, int fd) {
 	} else if(strcmp(command, "CON") == 0 && argCount == 4) {
 		putok("mensagem de CON");
 
-		//int id = atoi(arg[0]);
+		int id = atoi(arg[0]);
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
-		error = 0;
+		if( (error = executeCON(id, arg[1], arg[2], fd)) == -1) {
+			puterror("handleMessage", "CON falhou");
+		}
 
 	} else if(strcmp(command, "RSP") == 0 && argCount == 6) {
 		putok("mensagem RSP");
@@ -106,6 +109,44 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 					puterror("executeNEW", "mensagem de CON nao enviado ao succi");
 				}
 			}
+		}
+	}
+
+	return error;
+}
+
+int executeCON(int id, const char *ip, const char *port, int fd) {
+	int error = -1;
+
+	if(curNode.id == id) {	//testar se o id do no recebido é o mesmo do no actual
+		//existem apenas 2 nós no anel
+		//definir predi = succi e predi.fd = %d nova ligacao
+		putdebug("2o no a ser inserido: definir predi = succi e predi.fd = %d nova ligacao", fd);
+		prediNode.id = succiNode.id;
+		strcpy(prediNode.ip, succiNode.ip);
+		strcpy(prediNode.port, succiNode.port);
+		prediNode.fd = fd;
+		error = 0;
+	} else {
+		//terminar ligacao com succi
+		close(succiNode.fd);
+		rmConnection(succiNode.fd);
+
+		//ligar ao no recebido
+		if( (succiNode.fd = connectToNode(ip, port)) == -1) {
+			puterror("executeCON", "ligacao ao novo succi falhou");
+		} else {
+			putok("ligacao estabelecida com no succi");
+			//adicionar ao conjunto
+			addConnection(succiNode.fd);
+
+			//definir novo succi
+			succiNode.id = id;
+			strcpy(succiNode.ip, ip);
+			strcpy(succiNode.port, port);
+
+			//enviar NEW ao novo succi
+			error = sendMessageNEW(succiNode.fd);
 		}
 	}
 
