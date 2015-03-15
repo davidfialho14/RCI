@@ -227,3 +227,104 @@ int startServerSocket() {
 
 	return error;
 }
+
+/****************************************
+ * Comunicacao com servidor de arranque *
+ ****************************************/
+
+int getStartNode(int ringId, Node* startNode) {
+	int error = -1;
+
+	//criar mensagem de pedido
+	char message[BUFSIZE];
+	sprintf(message, "BQRY %d", ringId);
+
+	//enviar pedido
+	if(sendto(startServerFd, message, strlen(message), 0,
+			&startServerAddress, sizeof(startServerAddress)) <= 0) {
+		puterror("getStartNode", "envio de pedido de registo");
+	} else {
+		//limpar buffer
+		bzero(message, sizeof(message));
+		socklen_t addrlen = sizeof(startServerAddress);	//comprimento do endereco
+
+		//receber reposta do servidor de arranque
+		if(recvfrom(startServerFd, message, sizeof(message), 0,
+					&startServerAddress, &addrlen) <= 0) {
+			puterror("getStartNode", "resposta do SA nao recebida");
+		} else {
+			if(strcmp(message, "EMPTY") == 0) {
+				//anel esta vazio
+				error = 0;
+			} else {
+
+				char command[BUFSIZE];				//comando (esperado BRSP)
+				int ring = -1, startNodeId = -1;	//numero do anel
+				char startNodeIp[IPSIZE], startNodePort[IPSIZE];
+				char extra[BUFSIZE];	//usado para testar se a resposta tem argumentos a mais
+
+				//filtrar resposta
+				int argCount = sscanf(message,
+						"%s %d %d %s %s %s", command, &ring, &startNodeId,
+											 startNodeIp, startNodePort, extra);
+
+				//testar se o numero do anel na resposta corresponde ao anel do pedido
+				if(ring != ringId) {
+					puterror("getStartNode",
+				"resposta SA incorrecta: o anel introduzido e o anel recebido sao diferentes");
+				} else {
+
+					//verificar respota
+					if(argCount == 5 && strcmp(command, "BRSP") == 0) {
+
+						//retornar (por referencia) dados do nó de arranque do anel
+						startNode->id = startNodeId;
+						strcpy(startNode->ip, startNodeIp);
+						strcpy(startNode->port, startNodePort);
+
+						error = 1;	//o anel nao esta vazio e resposta tem foramto correcto
+					} else {
+						puterror("getStartNode",
+								"resposta do SA incorrecta: comando nao é BRSP");
+					}
+				}
+			}
+		}
+	}
+
+	return error;
+}
+
+int registerAsStartingNode(int ringId, int nodeId) {
+	int error = -1;
+
+	//criar mensagem para registar nó como nó de arranque
+	char message[BUFSIZE];
+	sprintf(message, "REG %d %d %s %s", ringId, nodeId, curNode.ip, curNode.port);
+	socklen_t addrlen = sizeof(startServerAddress);
+
+	//enviar pedido
+	if(sendto(startServerFd, message, strlen(message), 0, &startServerAddress, addrlen) > 0) {
+		//limpar buffer de mensagem
+		bzero(message, sizeof(message));
+		//receber reposta do servidor de arranque
+		if(recvfrom(startServerFd, message, sizeof(message), 0,
+				&startServerAddress, &addrlen) > 0) {
+
+			//verificar se a reposta do servidor esta correcta
+			if(strcmp(message, "OK") == 0) {
+				//mensagem de resposta correcta
+				curNode.id = nodeId;
+				curRing = ringId;
+				error = 0;
+			} else {
+				puterror("registerAsStartingNode",
+						"resposta do SA incorrecta (%s): resposta recebida nao foi OK", message);
+			}
+		} else {
+			puterror("registerAsStartingNode", "resposta do SA falhou: nao foi recebido o  OK");
+		}
+	}
+	return error;
+}
+

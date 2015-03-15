@@ -39,4 +39,24 @@ extern int startServerFd;
 */
 int initializeCommunication(int argc, const char *argv[]);
 
+/****************************************
+ * Comunicacao com servidor de arranque *
+ ****************************************/
+
+/*
+	descricao: 	executa um pedido ao servidor de arranque pelo o identificador,
+				endereco e porto do no de arranque do anel com id @ringId
+	retorno:	retorna por referencia a informacao do no de arranque do anel
+				retorna por valor um valor de erro
+	erro:		caso o anel nao exista é retornado o valor -1 caso contrario é
+				retornado o valor 0
+*/
+int getStartNode(int ringId, Node* startNode);
+
+/*
+	descricao:	regista o nó actual como sendo o nó de arranque do anel @ringId com o
+				identificador @nodeId. caso o anel @ringId nao exista é criado um anel @ringId
+*/
+int registerAsStartingNode(int ringId, int nodeId);
+
 #endif
