@@ -109,6 +109,8 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 					puterror("executeNEW", "mensagem de CON nao enviado ao succi");
 				}
 			}
+		} else {
+			error = 0;
 		}
 	} else {
 		//enviar mensagem de CON ao succi

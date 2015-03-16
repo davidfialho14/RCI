@@ -400,7 +400,7 @@ int sendMessageCON(int id, const char *ip, const char *port, int fd) {
 	sprintf(message, "CON %d %s %s\n", id, ip, port);
 
 	//enviar mensagem ao predi
-	if(write(prediNode.fd, message, strlen(message)) <= 0) {
+	if(write(fd, message, strlen(message)) <= 0) {
 		puterror("sendMessageCON", "envio de mensagem CON");
 	} else {
 		putok("mensagem CON enviada: %s para fd %d", message, fd);
