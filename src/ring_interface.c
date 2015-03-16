@@ -110,6 +110,21 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 				}
 			}
 		}
+	} else {
+		//enviar mensagem de CON ao succi
+		if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
+			puterror("executeNEW", "mensagem de CON nao enviado ao succi");
+		}
+
+		close(prediNode.fd);
+		rmConnection(prediNode.fd);
+
+		prediNode.id = id;
+		strcpy(prediNode.ip, ip);
+		strcpy(prediNode.port, port);
+		prediNode.fd = fd;
+
+		error = 0;
 	}
 
 	return error;

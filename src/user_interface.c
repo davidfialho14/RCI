@@ -6,6 +6,7 @@
 #include "defines.h"
 #include "communication.h"
 #include "common.h"
+#include "connections_set.h"
 
 extern int curRing;
 
@@ -134,6 +135,7 @@ int executeDebugJoin(int ring, int nodeId,
 		} else {
 			putok("executeDebugJoin", "ligacao estabelecida com no %d %s %s",
 					nodeId, succiAddress, succiPort);
+			addConnection(succiFd);
 			//definir no actual
 			curNode.id = nodeId;
 			curRing = ring;

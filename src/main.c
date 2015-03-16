@@ -14,6 +14,8 @@
 #include "common.h"
 #include "communication.h"
 #include "connections_set.h"
+#include "ring_interface.h"
+#include "user_interface.h"
 
 int main(int argc, char const *argv[]) {
 
