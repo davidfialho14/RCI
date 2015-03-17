@@ -11,7 +11,6 @@
 
 int executeNEW(int id, const char *ip, const char *port, int fd);
 int executeCON(int id, const char *ip, const char *port, int fd);
-int distance(int nodeK, int nodeL);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -39,7 +38,12 @@ int handleMessage(const char* message, int fd) {
 		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
 			//nó é responsavel pelo id procurado
 			//responder com o próprio IP e porto
-			printf("Nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
+			putok("sou o nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
+			//passar resposta para o predi
+			if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
+					curNode.id, curNode.ip, curNode.port)) == -1) {
+				puterror("executeQRY", "passagem da resposta para o predi");
+			}
 
 			error = 0;	//nao ocorreu nenhum erro
 		} else {

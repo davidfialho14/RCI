@@ -79,21 +79,29 @@ int executeUserCommand(const char *input) {
 			return -1;
 		}
 
-		int ownerId;
-		char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
+		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
+			//nó é responsavel pelo id procurado
+			//responder com o próprio IP e porto
+			printf("Nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
 
-		if( (error = executeQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
-			puterror("executeUserCommand", "search falhou");
-		} else if(error == 1) {
-			//o nó actual foi quem iniciou a procura
-			printf("Nó responsavel por %d:\n", searchedId);
-			printf("\tid: %d ip: %s porto: %s\n", ownerId, ownerIp, ownerPort);
-			error = 0;
+			error = 0;	//nao ocorreu nenhum erro
 		} else {
-			//mensagem retransmitida
-			//isto nao é suposto acontecer aqui
-			puterror("executeUserCommand", "mensagem nao devia ter sido retransmitida");
-			error = -1;
+			int ownerId;
+			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
+
+			if( (error = executeQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
+				puterror("executeUserCommand", "search falhou");
+			} else if(error == 1) {
+				//o nó actual foi quem iniciou a procura
+				printf("Nó responsavel por %d:\n", searchedId);
+				printf("\tid: %d ip: %s porto: %s\n", ownerId, ownerIp, ownerPort);
+				error = 0;
+			} else {
+				//mensagem retransmitida
+				//isto nao é suposto acontecer aqui
+				puterror("executeUserCommand", "mensagem nao devia ter sido retransmitida");
+				error = -1;
+			}
 		}
 
 	} else if(strcmp(command, "exit") == 0 && argCount == 1) {	//comando exit?
