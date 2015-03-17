@@ -472,7 +472,7 @@ int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
 	int error = -1;
 
 	//ler mensagem
-	if(read(fd, answer, sizeof(answer)) <= 0) {
+	if(readMessage(fd, answer, sizeof(answer)) <= 0) {
 		putok("ligacao %d terminada durante espera por RSP", fd);
 	} else {
 		//mensagem recebida com successo
