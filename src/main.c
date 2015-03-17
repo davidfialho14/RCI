@@ -103,7 +103,7 @@ int main(int argc, char const *argv[]) {
 				bzero(buffer, sizeof(buffer));
 
 				//ler mensagem
-				if(read(connectionFd, buffer, sizeof(buffer)) <= 0) {
+				if(readMessage(connectionFd, buffer, sizeof(buffer)) <= 0) {
 					close(connectionFd);		//fechar ligacao
 					rmConnection(connectionFd);	//remover no do conjunto de ligacoes
 					putok("ligacao %d terminada", connectionFd);

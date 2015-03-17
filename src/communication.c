@@ -375,6 +375,46 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 	return nodeFd;
 }
 
+int readMessage(int fd, char *message, size_t messageSize) {
+	int bytesRead = 0;
+	int totalBytesRead = 0;
+	char buffer[BUFSIZE/4];
+	char *lineFeed = NULL;
+
+	int messageEnd = FALSE;
+	while(!messageEnd) {
+
+		bzero(buffer, sizeof(buffer));
+		if( (bytesRead = read(fd, buffer, sizeof(buffer))) <= 0) {
+			//ligacao terminada
+			return -1;
+		}
+
+		if(totalBytesRead == 0) {
+			//first bytes read
+			strcpy(message, buffer);
+		} else {
+			if((totalBytesRead + bytesRead + 1) < messageSize) {
+				//concatenar bytes lidos com os anteriores
+				strcat(message, buffer);
+			} else {
+				//mensagem total demasiado grande
+				return -1;
+			}
+		}
+
+		if( (lineFeed = strchr(message, '\n')) != NULL) {
+			messageEnd = TRUE;
+			//remover \n
+			*lineFeed = '\0';
+		}
+
+		totalBytesRead += bytesRead;
+	}
+
+	return totalBytesRead;
+}
+
 int sendMessage(int fd, const char *message) {
 	int error = -1;
 
