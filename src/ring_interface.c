@@ -169,3 +169,22 @@ int executeCON(int id, const char *ip, const char *port, int fd) {
 
 	return error;
 }
+
+/*
+ *	descricao:	calcula a distancia desde o identificador @srcId até ao @destId
+ */
+int distance(int srcId, int destId) {
+	int dist = INFINITE;
+
+	if(destId < 0 || srcId < 0) {
+		dist = INFINITE;
+	} else {
+		if(destId >= srcId) {
+			dist = destId - srcId;
+		} else {
+			dist = MAXID + destId - srcId;
+		}
+	}
+
+	return dist;
+}
