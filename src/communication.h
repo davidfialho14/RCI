@@ -57,7 +57,7 @@ int getStartNode(int ringId, Node* startNode);
 	descricao:	regista o nó actual como sendo o nó de arranque do anel @ringId com o
 				identificador @nodeId. caso o anel @ringId nao exista é criado um anel @ringId
 */
-int registerAsStartingNode(int ringId, int nodeId);
+int registerAsStartingNode(int ringId, const Node *node);
 
 /**************************
  * Comunicacao com os nós *

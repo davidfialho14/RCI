@@ -138,8 +138,13 @@ int executeDebugJoin(int ring, int nodeId,
 	int errorCode = getStartNode(ring, &startNode);
 	if(errorCode == 0) {			//anel esta vazio
 
+		Node node;
+		node.id = nodeId;
+		strcpy(node.ip, curNode.ip);
+		strcpy(node.port, curNode.port);
+
 		//registar nó como nó de arranque do anel
-		if(registerAsStartingNode(ring, nodeId) == -1) {
+		if(registerAsStartingNode(ring, &node) == -1) {
 			puterror("executeDebugJoin", "registo de no de arranque falhou");
 		} else {
 			putok("registado no anel %d com id %d", ring, nodeId);

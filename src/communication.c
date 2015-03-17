@@ -295,12 +295,12 @@ int getStartNode(int ringId, Node* startNode) {
 	return error;
 }
 
-int registerAsStartingNode(int ringId, int nodeId) {
+int registerAsStartingNode(int ringId, const Node *node) {
 	int error = -1;
 
 	//criar mensagem para registar nó como nó de arranque
 	char message[BUFSIZE];
-	sprintf(message, "REG %d %d %s %s", ringId, nodeId, curNode.ip, curNode.port);
+	sprintf(message, "REG %d %d %s %s", ringId, node->id, node->ip, node->port);
 	socklen_t addrlen = sizeof(startServerAddress);
 
 	//enviar pedido
@@ -314,7 +314,7 @@ int registerAsStartingNode(int ringId, int nodeId) {
 			//verificar se a reposta do servidor esta correcta
 			if(strcmp(message, "OK") == 0) {
 				//mensagem de resposta correcta
-				curNode.id = nodeId;
+				curNode.id = node->id;
 				curRing = ringId;
 				error = 0;
 			} else {
