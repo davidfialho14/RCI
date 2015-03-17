@@ -426,3 +426,51 @@ int sendMessageQRY(int fd, int searcherId, int searchedId) {
 
 	return error;
 }
+
+int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
+		int *ownerId, char *ownerIp, char *ownerPort) {
+	int error = -1;
+
+	//ler mensagem
+	if(read(fd, answer, sizeof(answer)) <= 0) {
+		putok("ligacao %d terminada durante espera por RSP", fd);
+	} else {
+		//mensagem recebida com successo
+
+		char command[BUFSIZE];	//comando da resposta
+		int l = 0, k = 0;
+		char extra[BUFSIZE];
+
+		//ler resposta
+		if(sscanf(answer, "%s %d %d %d %s %s %s",
+				command, &l, &k, ownerId, ownerIp, ownerPort, extra) == 6) {
+
+			//verificar se os parametros da resposta batem certo com o pedido
+			if(l != searcherId || k != searchedId) {
+				puterror("executeQRY", "resposta com parametros incorrectos: %s", answer);
+			} else {
+				//retornar id, ip e porto do nó responsavel
+				error = 0;
+			}
+
+		} else {
+			puterror("executeQRY", "resposta recebida incorrecta: %s", answer);
+		}
+	}
+
+	return error;
+}
+
+int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
+		const char *ownerIp, const char *ownerPort) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "RSP %d %d %d %s %s\n", searcherId, searchedId, ownerId, ownerIp, ownerPort);
+
+	//enviar mensagem ao predi
+	error = sendMessage(fd, message);
+
+	return error;
+}

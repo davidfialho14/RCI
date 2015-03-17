@@ -75,4 +75,12 @@ int sendMessageNEW(int fd);
 
 int sendMessageCON(int id, const char *ip, const char *port, int fd);
 
+int sendMessageQRY(int fd, int searcherId, int searchedId);
+
+int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
+		int *ownerId, char *ownerIp, char *ownerPort);
+
+int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
+		const char *ownerIp, const char *ownerPort);
+
 #endif

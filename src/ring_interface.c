@@ -11,6 +11,7 @@
 
 int executeNEW(int id, const char *ip, const char *port, int fd);
 int executeCON(int id, const char *ip, const char *port, int fd);
+int distance(int nodeK, int nodeL);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -34,7 +35,16 @@ int handleMessage(const char* message, int fd) {
 			return -1;
 		}
 
-		error = 0;
+		//verificar se este nó é o responsavel pelo id procurado
+		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
+			//nó é responsavel pelo id procurado
+			//responder com o próprio IP e porto
+			printf("Nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
+
+			error = 0;	//nao ocorreu nenhum erro
+		} else {
+
+		}
 
 	} else if(strcmp(command, "CON") == 0 && argCount == 4) {
 		putok("mensagem de CON");
@@ -164,6 +174,49 @@ int executeCON(int id, const char *ip, const char *port, int fd) {
 
 			//enviar NEW ao novo succi
 			error = sendMessageNEW(succiNode.fd);
+		}
+	}
+
+	return error;
+}
+
+/*
+ * 	descricao:	passa a mensagem de QRY ao succi e fica bloqueado à espera da resposta
+ * 				quando recebe a resposta caso seja o nó que iniciou a procura retorna
+ * 				caso contrario envia a mesma resposta para o seu predi
+ * 	retorno:	-1 caso tenha ocorrido algum erro
+ * 				0 caso o nó actual não seja quem iniciou a procura
+ * 				1 caso o nó actual seja quem iniciou a procura
+ */
+int executeQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char *ownerPort) {
+	int error = -1;
+
+	//passar query ao succi
+	putdebug("enviar QRY a succi (%d, %s, %s, %d",
+			succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
+	if( (error = sendMessageQRY(succiNode.fd, searcherId, searchedId)) == -1) {
+		puterror("executeQRY", "mensagem de QRY falhou");
+
+	} else {
+
+		char answer[BUFSIZE];
+		bzero(answer, sizeof(answer));
+		//esperar resposta
+		if( (error = waitForRSP(succiNode.fd, answer, searcherId, searchedId,
+				ownerId, ownerIp, ownerPort)) == -1) {
+			puterror("executeQRY", "espera por resposta");
+		} else {
+
+			if(searcherId == curNode.id) {
+				//sou o nó que iniciou a procura
+				error = 1;
+			} else {
+				//passar resposta para o predi
+				if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
+						*ownerId, ownerIp, ownerPort)) == -1) {
+					puterror("executeQRY", "passagem da resposta para o predi");
+				}
+			}
 		}
 	}
 
