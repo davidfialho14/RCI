@@ -399,7 +399,7 @@ int sendMessageCON(int id, const char *ip, const char *port, int fd) {
 	char message[BUFSIZE];
 	sprintf(message, "CON %d %s %s\n", id, ip, port);
 
-	//enviar mensagem ao predi
+	//enviar mensagem ao fd
 	if(write(fd, message, strlen(message)) <= 0) {
 		puterror("sendMessageCON", "envio de mensagem CON");
 	} else {
@@ -410,3 +410,19 @@ int sendMessageCON(int id, const char *ip, const char *port, int fd) {
 	return error;
 }
 
+int sendMessageQRY(int fd, int searcherId, int searchedId) {
+	int error = -1;
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "QRY %d %d\n", searcherId, searchedId);
+
+	//enviar mensagem ao predi
+	if(write(fd, message, strlen(message)) <= 0) {
+		puterror("sendMessageQRY", "envio de mensagem QRY");
+	} else {
+		putok("mensagem QRY enviada: %s para fd %d", message, fd);
+		error = 0;
+	}
+
+	return error;
+}
