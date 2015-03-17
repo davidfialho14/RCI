@@ -11,6 +11,7 @@
 
 int executeNEW(int id, const char *ip, const char *port, int fd);
 int executeCON(int id, const char *ip, const char *port, int fd);
+int executeID(int id, int fd);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -76,9 +77,6 @@ int handleMessage(const char* message, int fd) {
 			puterror("handleMessage", "CON falhou");
 		}
 
-	} else if(strcmp(command, "RSP") == 0 && argCount == 6) {
-		putok("mensagem RSP");
-		error = 0;
 	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {
 		putok("mensagem de NEW");
 
@@ -92,10 +90,10 @@ int handleMessage(const char* message, int fd) {
 
 	} else if(strcmp(command, "ID") == 0 && argCount == 2) {
 		putok("mensagem ID");
-		error = 0;
-	} else if(strcmp(command, "SUCC") == 0 && argCount == 4) {
-		putok("mensagem SUCC");
-		error = 0;
+
+		int nodeId = atoi(arg[0]);
+		error = executeID(nodeId, fd);
+
 	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {
 		putok("mensagem BOOT");
 		iAmStartNode = TRUE;
@@ -239,6 +237,41 @@ int executeQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char
 				}
 			}
 		}
+	}
+
+	return error;
+}
+
+int executeID(int id, int fd) {
+	int error = -1;
+
+	Node succNode;
+
+	if(distance(id, curNode.id) < distance(id, prediNode.id)) {
+		//nó é responsavel pelo id procurado
+		succNode.id = curNode.id;
+		strcpy(succNode.ip, curNode.ip);
+		strcpy(succNode.port, curNode.port);
+
+	} else {
+
+		if( (error = executeQRY(curNode.id, id, &succNode.id, succNode.ip, succNode.port)) != 1) {
+			puterror("executeUserCommand", "search falhou");
+			return -1;
+		}
+	}
+
+	//enviar succi encontrado
+	if( (error = sendSUCC(fd, &succNode)) == -1) {
+		puterror("executeID", "envio de SUCC");
+		error = -1;
+	} else {
+
+		//fechar ligacao
+		close(fd);
+		rmConnection(fd);
+
+		error = 0;
 	}
 
 	return error;

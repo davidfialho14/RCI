@@ -90,4 +90,10 @@ int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
 
 int sendMessageBOOT(int fd);
 
+int sendMessageID(int fd, int nodeId);
+
+int waitForSUCC(int fd, Node *succNode);
+
+int sendSUCC(int fd, const Node *succNode);
+
 #endif
