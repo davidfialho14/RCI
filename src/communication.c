@@ -375,6 +375,19 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 	return nodeFd;
 }
 
+int sendMessage(int fd, const char *message) {
+	int error = -1;
+
+	if(write(fd, message, strlen(message)) <= 0) {
+		puterror("sendMessage", "envio de mensagem");
+	} else {
+		putok("mensagem enviada para fd %d: %s", fd, message);
+		error = 0;
+	}
+
+	return error;
+}
+
 int sendMessageNEW(int fd) {
 	int error = -1;
 
@@ -383,29 +396,20 @@ int sendMessageNEW(int fd) {
 	sprintf(message, "NEW %d %s %s\n", curNode.id, curNode.ip, curNode.port);
 
 	//enviar mensagem
-	if(write(fd, message, strlen(message)) <= 0) {
-		puterror("sendMessageNEW", "envio de mensagem NEW");
-	} else {
-		putok("mensagem NEW enviada: %s para fd %d", message, fd);
-		error = 0;
-	}
+	error = sendMessage(fd, message);
 
 	return error;
 }
 
 int sendMessageCON(int id, const char *ip, const char *port, int fd) {
 	int error = -1;
+
 	//criar mensagem
 	char message[BUFSIZE];
 	sprintf(message, "CON %d %s %s\n", id, ip, port);
 
 	//enviar mensagem ao predi
-	if(write(fd, message, strlen(message)) <= 0) {
-		puterror("sendMessageCON", "envio de mensagem CON");
-	} else {
-		putok("mensagem CON enviada: %s para fd %d", message, fd);
-		error = 0;
-	}
+	error = sendMessage(fd, message);
 
 	return error;
 }
