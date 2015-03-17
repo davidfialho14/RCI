@@ -514,3 +514,44 @@ int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
 
 	return error;
 }
+
+int sendMessageID(int fd, int nodeId) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "ID %d\n", nodeId);
+
+	//enviar mensagem ao predi
+	error = sendMessage(fd, message);
+
+	return error;
+}
+
+int waitForSUCC(int fd, Node *succNode) {
+	int error = -1;
+
+	char message[BUFSIZE];
+	bzero(message, sizeof(message));	//limpar buffer
+	if( (error = readMessage(fd, message, sizeof(message))) == -1) {
+		puterror("waitForSUCC", "leitura da respotas SUCC");
+	} else {
+
+		char command[BUFSIZE];	//comando da resposta
+		char extra[BUFSIZE];
+
+		//filtrar mensagem
+		if(sscanf(message, "%s %d %s %s %s", command,
+				&succNode->id, succNode->ip, succNode->port, extra) == 4) {
+
+			//resposta correcta
+			error = 0;
+
+		} else {
+			puterror("waitForSUCC", "mensagem de SUCC incorrecta");
+			error = -1;
+		}
+	}
+
+	return error;
+}

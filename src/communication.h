@@ -85,4 +85,8 @@ int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
 int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
 		const char *ownerIp, const char *ownerPort);
 
+int sendMessageID(int fd, int nodeId);
+
+int waitForSUCC(int fd, Node *succNode);
+
 #endif
