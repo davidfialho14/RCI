@@ -142,6 +142,7 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 			error = 0;
 		}
 	} else {
+
 		//enviar mensagem de CON ao succi
 		if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
 			puterror("executeNEW", "mensagem de CON nao enviado ao succi");

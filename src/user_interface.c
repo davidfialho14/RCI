@@ -232,6 +232,12 @@ int executeJoin(int ring, int nodeId) {
 				if( (error = waitForSUCC(startNode.fd, &succNode)) == -1) {
 					puterror("executeJoin", "espera pela resposta do servidor de arranque");
 				} else {
+
+					//fechar ligacao com succi
+					close(startNode.fd);
+					rmConnection(startNode.fd);
+					startNode.fd = -1;
+
 					//inserir nó no anel
 					error = insertNode(ring, nodeId, succNode.id, succNode.ip, succNode.port);
 				}
