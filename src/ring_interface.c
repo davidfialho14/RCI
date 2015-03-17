@@ -98,7 +98,9 @@ int handleMessage(const char* message, int fd) {
 		error = 0;
 	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {
 		putok("mensagem BOOT");
+		iAmStartNode = TRUE;
 		error = 0;
+
 	} else {
 		puterror("handleMessage", "mensagem invalida");
 	}
