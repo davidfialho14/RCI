@@ -19,6 +19,7 @@ extern Node succiNode;
 extern char startServerIp[IPSIZE];
 extern char startServerPort[PORTSIZE];
 extern int startServerFd;
+extern int iAmStartNode;
 
 /*****************
  * Inicialização *
@@ -59,6 +60,8 @@ int getStartNode(int ringId, Node* startNode);
 */
 int registerAsStartingNode(int ringId, const Node *node);
 
+int unregisterRing(int ringId);
+
 /**************************
  * Comunicacao com os nós *
  **************************/
@@ -84,5 +87,7 @@ int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
 
 int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
 		const char *ownerIp, const char *ownerPort);
+
+int sendMessageBOOT(int fd);
 
 #endif

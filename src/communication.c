@@ -18,6 +18,7 @@ char startServerIp[IPSIZE];
 char startServerPort[PORTSIZE];
 int startServerFd = -1;
 struct sockaddr startServerAddress;
+int iAmStartNode = FALSE;
 
 /*****************
  * Inicialização *
@@ -328,6 +329,36 @@ int registerAsStartingNode(int ringId, const Node *node) {
 	return error;
 }
 
+int unregisterRing(int ringId) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "UNR %d", ringId);
+
+	//enviar pedido
+	if(sendto(startServerFd, message, strlen(message), 0,
+			&startServerAddress, sizeof(startServerAddress)) <= 0) {
+		puterror("getStartNode", "envio de pedido de registo");
+	} else {
+		//limpar buffer
+		bzero(message, sizeof(message));
+		socklen_t addrlen = sizeof(startServerAddress);	//comprimento do endereco
+
+		//receber reposta do servidor de arranque
+		if(recvfrom(startServerFd, message, sizeof(message), 0,
+					&startServerAddress, &addrlen) <= 0) {
+			puterror("getStartNode", "resposta do SA nao recebida");
+		} else {
+			if(strcmp(message, "OK") == 0) {
+				error = 0;
+			}
+		}
+	}
+
+	return error;
+}
+
 /**************************
  * Comunicacao com os nós *
  **************************/
@@ -513,4 +544,13 @@ int sendMessageRSP(int fd, int searcherId, int searchedId, int ownerId,
 	error = sendMessage(fd, message);
 
 	return error;
+}
+
+int sendMessageBOOT(int fd) {
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "BOOT\n");
+
+	return sendMessage(fd, message);
 }

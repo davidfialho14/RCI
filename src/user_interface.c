@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "user_interface.h"
 #include "defines.h"
@@ -10,9 +11,11 @@
 #include "ring_interface.h"
 
 extern int curRing;
+extern int iAmStartNode;
 
 int executeDebugJoin(int ring, int nodeId,
 		int succiId, const char *succiAddress, const char *succiPort);
+int executeLeave();
 int executeUserCommand(const char *input) {
 	int error = -1;
 
@@ -61,6 +64,10 @@ int executeUserCommand(const char *input) {
 		//o comando leave nao tem argumentos
 		//tratar comando
 		putok("comando leave");
+
+		if( (error =  executeLeave()) == -1) {
+			puterror("executeUserCommand", "leave falhou");
+		}
 
 	} else if(strcmp(command, "show") == 0 && argCount == 1) {	//comando show?
 		//o comando show nao tem argumentos
@@ -144,6 +151,7 @@ int executeDebugJoin(int ring, int nodeId,
 		strcpy(node.port, curNode.port);
 
 		//registar nó como nó de arranque do anel
+		iAmStartNode = TRUE;
 		if(registerAsStartingNode(ring, &node) == -1) {
 			puterror("executeDebugJoin", "registo de no de arranque falhou");
 		} else {
@@ -189,6 +197,55 @@ int executeDebugJoin(int ring, int nodeId,
 
 	} else {
 		puterror("executeDebugJoin", "getStartNode falhou");
+	}
+
+	return error;
+}
+
+int executeLeave() {
+	int error = -1;
+
+	//testar se o nó está registado num anel
+	if(curRing == -1) {
+		puts("nó não se encontra registado em nenhum anel");
+		return -1;
+	}
+
+	//testar se o nó é o único no anel
+	if(succiNode.id == -1 && prediNode.id == -1) {
+		error = unregisterRing(curRing);
+	} else {
+
+		if(iAmStartNode) {	//testar se o nó actual é o nó de arranque do anel
+
+			//registar succi como no de arranque
+			if(registerAsStartingNode(curRing, &succiNode) == -1) {
+				puterror("executeDebugJoin", "registo de no de arranque falhou");
+				return -1;
+			}
+
+			//enviar BOOT a succi
+			if(sendMessageBOOT(succiNode.fd) == -1) {
+				return -1;
+			}
+		}
+
+		//fechar ligacao com succi
+		close(succiNode.fd);
+		rmConnection(succiNode.fd);
+		succiNode.fd = -1;
+
+		//enviar informacoes do succi a predi
+		if( (error = sendMessageCON(succiNode.id, succiNode.ip, succiNode.port, prediNode.fd)) == -1) {
+			puterror("executeLeave", "mensagem de CON a predi");
+			return -1;
+		}
+
+		close(prediNode.fd);
+		rmConnection(prediNode.fd);
+		prediNode.fd = -1;
+
+		curRing = -1;
 	}
 
 	return error;
