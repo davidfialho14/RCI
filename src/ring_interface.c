@@ -43,7 +43,22 @@ int handleMessage(const char* message, int fd) {
 
 			error = 0;	//nao ocorreu nenhum erro
 		} else {
+			int ownerId;
+			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
 
+			if( (error = executeQRY(searcherId, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
+				puterror("handleMessage", "qry falhou");
+
+			} else if(error == 1) {
+				//o nó actual foi quem iniciou a procura
+				//isto nao é suposto acontecer aqui
+				puterror("handleMessage", "Nó responsável incorrecto");
+				error = -1;
+			} else {
+				//mensagem retransmitida
+				putok("mensagem retransmitida");
+				error = 0;
+			}
 		}
 
 	} else if(strcmp(command, "CON") == 0 && argCount == 4) {

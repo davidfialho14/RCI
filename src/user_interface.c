@@ -7,6 +7,7 @@
 #include "communication.h"
 #include "common.h"
 #include "connections_set.h"
+#include "ring_interface.h"
 
 extern int curRing;
 
@@ -76,6 +77,23 @@ int executeUserCommand(const char *input) {
 		if(curRing == -1) {
 			printf("o anel nao esta registado em nenhum anel\n");
 			return -1;
+		}
+
+		int ownerId;
+		char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
+
+		if( (error = executeQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
+			puterror("executeUserCommand", "search falhou");
+		} else if(error == 1) {
+			//o nó actual foi quem iniciou a procura
+			printf("Nó responsavel por %d:\n", searchedId);
+			printf("\tid: %d ip: %s porto: %s\n", ownerId, ownerIp, ownerPort);
+			error = 0;
+		} else {
+			//mensagem retransmitida
+			//isto nao é suposto acontecer aqui
+			puterror("executeUserCommand", "mensagem nao devia ter sido retransmitida");
+			error = -1;
 		}
 
 	} else if(strcmp(command, "exit") == 0 && argCount == 1) {	//comando exit?
