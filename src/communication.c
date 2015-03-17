@@ -555,3 +555,16 @@ int waitForSUCC(int fd, Node *succNode) {
 
 	return error;
 }
+
+int sendSUCC(int fd, const Node *succNode) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "SUCC %d %s %s\n", succNode->id, succNode->ip, succNode->port);
+
+	//enviar mensagem ao predi
+	error = sendMessage(fd, message);
+
+	return error;
+}

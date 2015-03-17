@@ -89,4 +89,6 @@ int sendMessageID(int fd, int nodeId);
 
 int waitForSUCC(int fd, Node *succNode);
 
+int sendSUCC(int fd, const Node *succNode);
+
 #endif
