@@ -42,12 +42,14 @@ int main(int argc, char const *argv[]) {
 		//adicionar stdin ao conjunto de fds
 		FD_SET(STDIN_FILENO, &readFds);
 
+		putchar('\n');
 		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
 		putdebug("SucciNode - id: %d ip: %s port: %s fd: %d",
 						succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 		putdebug("PrediNode - id: %d ip: %s port: %s fd: %d",
 						prediNode.id, prediNode.ip, prediNode.port, prediNode.fd);
+		putchar('\n');
 
 		if(maxFd < getMaxConnection()) {
 			maxFd = getMaxConnection();
@@ -71,7 +73,7 @@ int main(int argc, char const *argv[]) {
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
 				puterror("main", "ligacao nao foi aceite");
 			} else {
-				putdebug("nova ligacao %d addr: %s", connectionFd, inet_ntoa(addr.sin_addr));
+				putdebug("nova ligacao %d addr: %s %d", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
 			}
@@ -87,7 +89,7 @@ int main(int argc, char const *argv[]) {
 
 			int errorCode = executeUserCommand(buffer);
 			switch(errorCode) {
-				case 0: 	putok("comando processado correctamente"); break;
+				case 0: 	break;	//comando processado correctamente
 				case -1: 	puterror("main", "falha no processamento do comando"); break;
 				case 1:		quit = TRUE; continue;	//sair do programa
 			}
@@ -97,8 +99,6 @@ int main(int argc, char const *argv[]) {
 		int connectionFd = getFirstConnection();
 		while(connectionFd >= 0) {
 			if(FD_ISSET(connectionFd, &readFds)) {
-				putdebug("ligacao %d comunicou", connectionFd);
-
 				//limpar buffer de rececao
 				bzero(buffer, sizeof(buffer));
 
@@ -107,6 +107,15 @@ int main(int argc, char const *argv[]) {
 					close(connectionFd);		//fechar ligacao
 					rmConnection(connectionFd);	//remover no do conjunto de ligacoes
 					putok("ligacao %d terminada", connectionFd);
+
+					if(connectionFd == succiNode.fd) {
+						succiNode.fd = -1;
+					}
+
+					if(connectionFd == prediNode.fd) {
+						prediNode.fd = -1;
+					}
+
 				} else {
 					//tratar mensagem recebida
 					putok("mensagem recebida pela ligacao %d: %s", connectionFd, buffer);
@@ -116,9 +125,7 @@ int main(int argc, char const *argv[]) {
 					if(buffer[length - 1] == '\n')
 						buffer[length - 1] = '\0';
 
-					if(handleMessage(buffer, connectionFd) == 0) {
-						putok("mensagem tratada com sucesso");
-					} else {
+					if(handleMessage(buffer, connectionFd) == -1) {
 						puterror("main", "mensagem falhou");
 					}
 				}

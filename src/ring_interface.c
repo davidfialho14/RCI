@@ -109,9 +109,7 @@ int handleMessage(const char* message, int fd) {
 int executeNEW(int id, const char *ip, const char *port, int fd) {
 	int error = -1;
 
-	if(prediNode.fd == -1) {
-		//insercao do segundo nó no anel
-		putok("insercao do segundo nó no anel");
+	if(prediNode.fd == -1) {	//insercao do segundo nó no anel
 
 		//definir novo predi
 		prediNode.id = id;
@@ -124,7 +122,6 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 			if( (succiNode.fd = connectToNode(ip, port)) == -1) {
 				puterror("executeNEW", "ligacao ao novo succi falhou");
 			} else {
-				putok("ligacao estabelecida com novo succi");
 				//adicionar ao conjunto
 				addConnection(succiNode.fd);
 
@@ -141,13 +138,17 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 		} else {
 			error = 0;
 		}
+
 	} else {
 
-		//enviar mensagem de CON ao succi
-		if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
-			puterror("executeNEW", "mensagem de CON nao enviado ao succi");
+		if(id != succiNode.id) {
+			//enviar mensagem de CON ao succi
+			if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
+				puterror("executeNEW", "mensagem de CON nao enviado ao succi");
+			}
 		}
 
+		putok("terminei ligacao %d", prediNode.fd);
 		close(prediNode.fd);
 		rmConnection(prediNode.fd);
 
@@ -168,14 +169,15 @@ int executeCON(int id, const char *ip, const char *port, int fd) {
 	if(curNode.id == id) {	//testar se o id do no recebido é o mesmo do no actual
 		//existem apenas 2 nós no anel
 		//definir predi = succi e predi.fd = %d nova ligacao
-		putdebug("2o no a ser inserido: definir predi = succi e predi.fd = %d nova ligacao", fd);
 		prediNode.id = succiNode.id;
 		strcpy(prediNode.ip, succiNode.ip);
 		strcpy(prediNode.port, succiNode.port);
 		prediNode.fd = fd;
 		error = 0;
+
 	} else {
 		//terminar ligacao com succi
+		putok("terminei ligacao %d", succiNode.fd);
 		close(succiNode.fd);
 		rmConnection(succiNode.fd);
 
@@ -183,7 +185,6 @@ int executeCON(int id, const char *ip, const char *port, int fd) {
 		if( (succiNode.fd = connectToNode(ip, port)) == -1) {
 			puterror("executeCON", "ligacao ao novo succi falhou");
 		} else {
-			putok("ligacao estabelecida com no succi");
 			//adicionar ao conjunto
 			addConnection(succiNode.fd);
 
@@ -269,6 +270,7 @@ int executeID(int id, int fd) {
 	} else {
 
 		//fechar ligacao
+		putok("terminei ligacao %d", fd);
 		close(fd);
 		rmConnection(fd);
 

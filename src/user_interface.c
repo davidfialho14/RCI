@@ -172,8 +172,6 @@ int executeDebugJoin(int ring, int nodeId,
 
 	} else  if(errorCode == 1){ 	//o anel nao esta vazio
 
-
-
 		//inserir nó no anel
 		error = insertNode(ring, nodeId, succiId, succiAddress, succiPort);
 
@@ -234,6 +232,7 @@ int executeJoin(int ring, int nodeId) {
 				} else {
 
 					//fechar ligacao com succi
+					putok("terminei ligacao %d", startNode.fd);
 					close(startNode.fd);
 					rmConnection(startNode.fd);
 					startNode.fd = -1;
@@ -280,6 +279,7 @@ int executeLeave() {
 		}
 
 		//fechar ligacao com succi
+		putok("terminei ligacao %d", succiNode.fd);
 		close(succiNode.fd);
 		rmConnection(succiNode.fd);
 		succiNode.fd = -1;
@@ -290,6 +290,7 @@ int executeLeave() {
 			return -1;
 		}
 
+		putok("terminei ligacao %d", prediNode.fd);
 		close(prediNode.fd);
 		rmConnection(prediNode.fd);
 		prediNode.fd = -1;
@@ -310,8 +311,7 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 		puterror("executeDebugJoin", "tentativa de ligacao com succi falhou");
 
 	} else {
-		putok("executeDebugJoin", "ligacao estabelecida com no %d %s %s",
-				nodeId, succiAddress, succiPort);
+		//adionar ligacao ao conjunto
 		addConnection(succiFd);
 
 		//definir nó com id e ring indicados
@@ -329,9 +329,6 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 			strcpy(succiNode.ip, succiAddress);
 			strcpy(succiNode.port, succiPort);
 			succiNode.fd = succiFd;
-
-			putok("definido novo succi %d %s %s %d",
-					succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 		}
 	}
 

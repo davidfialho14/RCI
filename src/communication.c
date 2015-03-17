@@ -389,6 +389,7 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 					close(nodeFd);	//fechar socket criado
 					nodeFd = -1;
 				} else {
+					putok("ligacao estabelecida %d com: %s %s", nodeFd, nodeAddress, nodePort);
 					break;	//sair apos ligacao ter sido estabelecida
 				}
 			}
