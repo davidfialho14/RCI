@@ -450,7 +450,7 @@ int readMessage(int fd, char *message, size_t messageSize) {
 int sendMessage(int fd, const char *message) {
 	int error = -1;
 
-	if(write(fd, message, strlen(message)) <= 0) {
+	if(send(fd, message, strlen(message), MSG_NOSIGNAL) <= 0) {
 		puterror("sendMessage", "envio de mensagem");
 	} else {
 		putok("mensagem enviada para fd %d: %s", fd, message);
