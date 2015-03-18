@@ -77,6 +77,12 @@ int handleMessage(const char* message, int fd) {
 			return -1;
 		}
 
+		//testar o valor do identificador pretendido
+		if(id > MAXID) {
+			puterror("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			return -1;
+		}
+
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
@@ -93,6 +99,12 @@ int handleMessage(const char* message, int fd) {
 			return -1;
 		}
 
+		//testar o valor do identificador pretendido
+		if(id > MAXID) {
+			puterror("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			return -1;
+		}
+
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
@@ -106,6 +118,12 @@ int handleMessage(const char* message, int fd) {
 		int nodeId;
 		if(stringToUInt(arg[0], (unsigned int*) &nodeId) == -1) {
 			puterror("handleMessage", "ID id da mensagem invalido");
+			return -1;
+		}
+
+		//testar o valor do identificador pretendido
+		if(nodeId > MAXID) {
+			puterror("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 			return -1;
 		}
 
