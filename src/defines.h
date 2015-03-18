@@ -6,7 +6,7 @@
 #define FALSE		0
 #define PORTSIZE	6
 #define IPSIZE		HOST_NAME_MAX
-#define MAXID		64
+#define MAXID		63
 
 #define INFINITE	65000
 

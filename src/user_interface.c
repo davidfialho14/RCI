@@ -165,7 +165,13 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 
 	//testar se o nó já pertence a um anel
 	if(curRing != -1) {
-		putwarning("o no ja esta registado no anel %d", curRing);
+		putwarning("o nó já está registado no anel %d", curRing);
+		return -1;
+	}
+
+	//testar o valor do identificador pretendido
+	if(nodeId > MAXID) {
+		printf("o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 		return -1;
 	}
 
