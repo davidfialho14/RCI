@@ -137,7 +137,8 @@ int executeUserCommand(const char *input) {
  * 				succiPort - porto do succi
  * retorno:		retorna 0 em caso de sucesso e -1 em caso de erro
  */
-int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, const char *succiPort);
+int insertNode(int ring, int nodeId, int succiId,
+	const char *succiAddress, const char *succiPort);
 int executeDebugJoin(int ring, int nodeId,
 		int succiId, const char *succiAddress, const char *succiPort) {
 	int error = -1;
@@ -260,7 +261,7 @@ int executeLeave() {
 	}
 
 	//testar se o nó é o único no anel
-	if(succiNode.id == -1 && prediNode.id == -1) {
+	if(succiNode.fd == -1 && prediNode.fd == -1) {
 		error = unregisterRing(curRing);
 	} else {
 
@@ -294,10 +295,10 @@ int executeLeave() {
 		close(prediNode.fd);
 		rmConnection(prediNode.fd);
 		prediNode.fd = -1;
-
-		curRing = -1;
-
 	}
+
+	//indicar que o nó nao tem anel definido
+	curRing = -1;
 
 	return error;
 }
