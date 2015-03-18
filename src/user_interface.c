@@ -33,7 +33,7 @@ int executeUserCommand(const char *input) {
 	int argCount = sscanf(input, "%s %d %d %d %s %s %s", command, &ring, &nodeId, &succiId,
 			succiAddress, succiPort, extra);
 	putdebug("input do utilizador: %s", input);
-	
+
 	if(strcmp(command, "join") == 0) { 			//comando join?
 		//comando join lido
 
@@ -78,6 +78,29 @@ int executeUserCommand(const char *input) {
 		//o comando show nao tem argumentos
 		//tratar comando
 		putok("comando show");
+
+		if(curRing == -1) {
+			printf("Nó não pertence a nenhum anel\n");
+		} else {
+			printf("Anel: %d\n", curRing);
+			printf("Id: %d\n", curNode.id);
+
+			printf("Succi Id: ");
+			if(succiNode.fd == -1) {
+					printf("não definido\n");
+			} else {
+				printf("%d\n", succiNode.id);
+			}
+
+			printf("Predi Id: ");
+			if(succiNode.fd == -1) {
+					printf("não definido\n");
+			} else {
+				printf("%d\n", prediNode.id);
+			}
+		}
+
+		error = 0;
 
 	} else if(strcmp(command, "search") == 0 && argCount == 2) {	//comando search?
 		//o comando search aceita apenas 1 argumento
