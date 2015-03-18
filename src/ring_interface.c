@@ -8,6 +8,7 @@
 #include "common.h"
 #include "communication.h"
 #include "connections_set.h"
+#include "string_operations.h"
 
 int executeNEW(int id, const char *ip, const char *port, int fd);
 int executeCON(int id, const char *ip, const char *port, int fd);
@@ -27,11 +28,12 @@ int handleMessage(const char* message, int fd) {
 	if(strcmp(command, "QRY") == 0 && argCount == 3) {	//QRY message
 		putok("mensagem QRY");
 
-		int searcherId = atoi(arg[0]);
-		int searchedId = atoi(arg[1]);
+		int searcherId;
+		int searchedId;
 
-		if(searchedId == 0 || searcherId == 0) {
-			puterror("handleMessage", "QRY ids invalidos");
+		if(stringToUInt(arg[0], (unsigned int*) &searcherId) == -1 ||
+		stringToUInt(arg[1], (unsigned int*) &searchedId) == -1) {
+			puterror("handleMessage", "QRY ids da mensagem invalidos");
 			return -1;
 		}
 
@@ -69,7 +71,12 @@ int handleMessage(const char* message, int fd) {
 	} else if(strcmp(command, "CON") == 0 && argCount == 4) {
 		putok("mensagem de CON");
 
-		int id = atoi(arg[0]);
+		int id;
+		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
+			puterror("handleMessage", "CON id da mensagem invalido");
+			return -1;
+		}
+
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
@@ -80,7 +87,12 @@ int handleMessage(const char* message, int fd) {
 	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {
 		putok("mensagem de NEW");
 
-		int id = atoi(arg[0]);
+		int id;
+		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
+			puterror("handleMessage", "CON id da mensagem invalido");
+			return -1;
+		}
+
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
@@ -91,7 +103,12 @@ int handleMessage(const char* message, int fd) {
 	} else if(strcmp(command, "ID") == 0 && argCount == 2) {
 		putok("mensagem ID");
 
-		int nodeId = atoi(arg[0]);
+		int nodeId;
+		if(stringToUInt(arg[0], (unsigned int*) &nodeId) == -1) {
+			puterror("handleMessage", "ID id da mensagem invalido");
+			return -1;
+		}
+
 		error = executeID(nodeId, fd);
 
 	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {
