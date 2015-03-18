@@ -14,7 +14,7 @@ extern int curRing;
 extern int iAmStartNode;
 
 int join(int ring, int nodeId, int succiId, const char *succiAddress, const char *succiPort);
-int executeLeave();
+int leave();
 
 int executeUserCommand(const char *input) {
 	int error = -1;
@@ -68,7 +68,7 @@ int executeUserCommand(const char *input) {
 		//tratar comando
 		putok("comando leave");
 
-		if( (error =  executeLeave()) == -1) {
+		if( (error =  leave()) == -1) {
 			puterror("executeUserCommand", "leave falhou");
 		}
 
@@ -237,7 +237,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 	return error;
 }
 
-int executeLeave() {
+int leave() {
 	int error = -1;
 
 	//testar se o nó está registado num anel
@@ -273,7 +273,7 @@ int executeLeave() {
 
 		//enviar informacoes do succi a predi
 		if( (error = sendMessageCON(succiNode.id, succiNode.ip, succiNode.port, prediNode.fd)) == -1) {
-			puterror("executeLeave", "mensagem de CON a predi");
+			puterror("leave", "mensagem de CON a predi");
 			return -1;
 		}
 
