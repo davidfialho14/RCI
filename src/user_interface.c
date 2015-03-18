@@ -122,7 +122,7 @@ int executeUserCommand(const char *input) {
 			int ownerId;
 			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
 
-			if( (error = executeQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
+			if( (error = handleQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
 				puterror("executeUserCommand", "search falhou");
 			} else if(error == 1) {
 				//o nó actual foi quem iniciou a procura

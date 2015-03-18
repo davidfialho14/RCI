@@ -10,9 +10,9 @@
 #include "connections_set.h"
 #include "string_operations.h"
 
-int executeNEW(int id, const char *ip, const char *port, int fd);
-int executeCON(int id, const char *ip, const char *port, int fd);
-int executeID(int id, int fd);
+int handleNEW(int id, const char *ip, const char *port, int fd);
+int handleCON(int id, const char *ip, const char *port, int fd);
+int handleID(int id, int fd);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -45,7 +45,7 @@ int handleMessage(const char* message, int fd) {
 			//passar resposta para o predi
 			if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
 					curNode.id, curNode.ip, curNode.port)) == -1) {
-				puterror("executeQRY", "passagem da resposta para o predi");
+				puterror("handleQRY", "passagem da resposta para o predi");
 			}
 
 			error = 0;	//nao ocorreu nenhum erro
@@ -53,7 +53,7 @@ int handleMessage(const char* message, int fd) {
 			int ownerId;
 			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
 
-			if( (error = executeQRY(searcherId, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
+			if( (error = handleQRY(searcherId, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
 				puterror("handleMessage", "qry falhou");
 
 			} else if(error == 1) {
@@ -80,7 +80,7 @@ int handleMessage(const char* message, int fd) {
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
-		if( (error = executeCON(id, arg[1], arg[2], fd)) == -1) {
+		if( (error = handleCON(id, arg[1], arg[2], fd)) == -1) {
 			puterror("handleMessage", "CON falhou");
 		}
 
@@ -96,7 +96,7 @@ int handleMessage(const char* message, int fd) {
 		//arg[1] - endereco IP
 		//arg[2] - porto
 
-		if( (error = executeNEW(id, arg[1], arg[2], fd)) == -1) {
+		if( (error = handleNEW(id, arg[1], arg[2], fd)) == -1) {
 			puterror("handleMessage", "NEW falhou");
 		}
 
@@ -109,7 +109,7 @@ int handleMessage(const char* message, int fd) {
 			return -1;
 		}
 
-		error = executeID(nodeId, fd);
+		error = handleID(nodeId, fd);
 
 	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {
 		putok("mensagem BOOT");
@@ -123,7 +123,7 @@ int handleMessage(const char* message, int fd) {
 	return error;
 }
 
-int executeNEW(int id, const char *ip, const char *port, int fd) {
+int handleNEW(int id, const char *ip, const char *port, int fd) {
 	int error = -1;
 
 	if(prediNode.fd == -1) {	//insercao do segundo nó no anel
@@ -137,7 +137,7 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 		if(succiNode.fd == -1) {
 
 			if( (succiNode.fd = connectToNode(ip, port)) == -1) {
-				puterror("executeNEW", "ligacao ao novo succi falhou");
+				puterror("handleNEW", "ligacao ao novo succi falhou");
 			} else {
 				//adicionar ao conjunto
 				addConnection(succiNode.fd);
@@ -149,7 +149,7 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 
 				//enviar mensagem de CON ao succi
 				if( (error = sendMessageCON(id, ip, port, succiNode.fd)) == -1) {
-					puterror("executeNEW", "mensagem de CON nao enviado ao succi");
+					puterror("handleNEW", "mensagem de CON nao enviado ao succi");
 				}
 			}
 		} else {
@@ -161,7 +161,7 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 		if(id != succiNode.id) {
 			//enviar mensagem de CON ao succi
 			if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
-				puterror("executeNEW", "mensagem de CON nao enviado ao succi");
+				puterror("handleNEW", "mensagem de CON nao enviado ao succi");
 			}
 		}
 
@@ -180,7 +180,7 @@ int executeNEW(int id, const char *ip, const char *port, int fd) {
 	return error;
 }
 
-int executeCON(int id, const char *ip, const char *port, int fd) {
+int handleCON(int id, const char *ip, const char *port, int fd) {
 	int error = -1;
 
 	if(curNode.id == id) {	//testar se o id do no recebido é o mesmo do no actual
@@ -200,7 +200,7 @@ int executeCON(int id, const char *ip, const char *port, int fd) {
 
 		//ligar ao no recebido
 		if( (succiNode.fd = connectToNode(ip, port)) == -1) {
-			puterror("executeCON", "ligacao ao novo succi falhou");
+			puterror("handleCON", "ligacao ao novo succi falhou");
 		} else {
 			//adicionar ao conjunto
 			addConnection(succiNode.fd);
@@ -226,14 +226,14 @@ int executeCON(int id, const char *ip, const char *port, int fd) {
  * 				0 caso o nó actual não seja quem iniciou a procura
  * 				1 caso o nó actual seja quem iniciou a procura
  */
-int executeQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char *ownerPort) {
+int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char *ownerPort) {
 	int error = -1;
 
 	//passar query ao succi
 	putdebug("enviar QRY a succi (%d, %s, %s, %d",
 			succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 	if( (error = sendMessageQRY(succiNode.fd, searcherId, searchedId)) == -1) {
-		puterror("executeQRY", "mensagem de QRY falhou");
+		puterror("handleQRY", "mensagem de QRY falhou");
 
 	} else {
 
@@ -242,7 +242,7 @@ int executeQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char
 		//esperar resposta
 		if( (error = waitForRSP(succiNode.fd, answer, searcherId, searchedId,
 				ownerId, ownerIp, ownerPort)) == -1) {
-			puterror("executeQRY", "espera por resposta");
+			puterror("handleQRY", "espera por resposta");
 		} else {
 
 			if(searcherId == curNode.id) {
@@ -252,7 +252,7 @@ int executeQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char
 				//passar resposta para o predi
 				if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
 						*ownerId, ownerIp, ownerPort)) == -1) {
-					puterror("executeQRY", "passagem da resposta para o predi");
+					puterror("handleQRY", "passagem da resposta para o predi");
 				}
 			}
 		}
@@ -261,7 +261,7 @@ int executeQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char
 	return error;
 }
 
-int executeID(int id, int fd) {
+int handleID(int id, int fd) {
 	int error = -1;
 
 	Node succNode;
@@ -274,7 +274,7 @@ int executeID(int id, int fd) {
 
 	} else {
 
-		if( (error = executeQRY(curNode.id, id, &succNode.id, succNode.ip, succNode.port)) != 1) {
+		if( (error = handleQRY(curNode.id, id, &succNode.id, succNode.ip, succNode.port)) != 1) {
 			puterror("executeUserCommand", "search falhou");
 			return -1;
 		}
@@ -282,7 +282,7 @@ int executeID(int id, int fd) {
 
 	//enviar succi encontrado
 	if( (error = sendSUCC(fd, &succNode)) == -1) {
-		puterror("executeID", "envio de SUCC");
+		puterror("handleID", "envio de SUCC");
 		error = -1;
 	} else {
 
