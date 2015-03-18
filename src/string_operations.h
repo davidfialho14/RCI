@@ -9,4 +9,6 @@
  */
 int isStringNumber(const char *string);
 
+int stringToUInt(const char *string, int *number);
+
 #endif /* SRC_STRING_OPERATIONS_H_ */
