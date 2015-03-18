@@ -9,6 +9,6 @@
  */
 int isStringNumber(const char *string);
 
-int stringToUInt(const char *string, int *number);
+int stringToUInt(const char *string, unsigned int *number);
 
 #endif /* SRC_STRING_OPERATIONS_H_ */
