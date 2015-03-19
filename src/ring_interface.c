@@ -249,6 +249,13 @@ int handleCON(int id, const char *ip, const char *port, int fd) {
 int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char *ownerPort) {
 	int error = -1;
 
+	//testar se nó pertence a algum anel
+	if(curRing == -1) {
+		//nó não pertence a um anel logo não pode fazer uma pesquisa
+		puterror("handleQRY", "nó não pertence a um anel logo não pode fazer uma pesquisa");
+		return -1;
+	}
+
 	//passar query ao succi
 	putdebug("enviar QRY a succi (%d, %s, %s, %d",
 			succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
