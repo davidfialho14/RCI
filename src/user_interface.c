@@ -150,12 +150,13 @@ int executeUserCommand(const char *input) {
 }
 
 /*
- * descricao:	executa um debug join
- * argumentos:	ring - anel onde fazer join
- * 				nodeId - id que o no pretende ter
- * 				succiId - id do no succi a que o no se pretende ligar
- * 				succiAddress - endereco do succi
- * 				succiPort - porto do succi
+ * descricao:	executa um join de um nó num determinado anel
+ * argumentos:
+ *	ring - anel onde fazer join
+ * 	nodeId - id que o no pretende ter
+ * 	succiId - id do no succi a que o no se pretende ligar
+ * 	succiAddress - endereco do succi
+ * 	succiPort - porto do succi
  * retorno:		retorna 0 em caso de sucesso e -1 em caso de erro
  */
 int insertNode(int ring, int nodeId, int succiId,
@@ -225,8 +226,15 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 						rmConnection(startNode.fd);
 						startNode.fd = -1;
 
-						//inserir nó no anel
-						error = insertNode(ring, nodeId, succ.id, succ.ip, succ.port);
+						//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
+						if(succ.id == nodeId) {
+							printf("o identificador %d já existe no anel, escolha outro por favor\n", nodeId);
+							error = -1;
+						} else {
+							//inserir nó no anel
+							error = insertNode(ring, nodeId, succ.id, succ.ip, succ.port);
+						}
+
 					}
 				}
 			}
