@@ -9,6 +9,7 @@
 #include "common.h"
 #include "connections_set.h"
 #include "ring_interface.h"
+#include "string_operations.h"
 
 extern int curRing;
 extern int iAmStartNode;
@@ -20,24 +21,28 @@ int executeUserCommand(const char *input) {
 	int error = -1;
 
 	//interpretar o comando
-	char command[BUFSIZE];			//comando introduzido
-	int ring = -1, nodeId = -1;		//anel pretendido, id prentedido
-	int succiId = -1;				//id do succi
-	char succiAddress[IPSIZE];		//endereco ip do succi; tem que ser converitdo para inteiro
-	char succiPort[PORTSIZE];		//porto do succi
-	char extra[BUFSIZE];			//utilizado nao para testar se existo um argumento a mais
+	char command[BUFSIZE/4];			//comando introduzido
+	char arg[6][BUFSIZE/4];			//argumentos lidos
 
 	//filtrar linha introduzida
-	int argCount = sscanf(input, "%s %d %d %d %s %s %s", command, &ring, &nodeId, &succiId,
-			succiAddress, succiPort, extra);
 	putdebug("input do utilizador: %s", input);
-
+	int argCount = sscanf(input, "%s %s %s %s %s %s %s", command, arg[0], arg[1], arg[2], arg[3],
+												arg[4], arg[5]);
 	if(strcmp(command, "join") == 0) { 			//comando join?
 		//comando join lido
 
 		//testar se o no ja esta registado
 		if(curRing != -1) {
-			printf("o no ja esta registado no anel %d\n", curRing);
+			printf("o nó já se encontra registado no anel %d\n", curRing);
+			return -1;	//retornar erro
+		}
+
+		int ring = -1; 		//args[0]
+		int nodeId = -1;	//args[1]
+
+		if(stringToUInt(arg[0], (unsigned int*) &ring) == -1 ||
+		stringToUInt(arg[1], (unsigned int*) &nodeId) == -1) {
+			putwarning("comando join inválido: argumentos inválidos");
 			return -1;	//retornar erro
 		}
 
@@ -52,6 +57,15 @@ int executeUserCommand(const char *input) {
 
 		} else if(argCount == 6) {
 			//tratar join sem pesquisa
+			int succiId	= -1;
+			if(stringToUInt(arg[2], (unsigned int*) &succiId) == -1) {
+				putwarning("comando join inválido: argumentos inválidos");
+				return -1;
+			}
+
+			char *succiAddress = arg[3];
+			char *succiPort = arg[4];
+
 			putok("comando join sem pesquisa: %s %d %d %d %s %s", command, ring, nodeId,
 					succiId, succiAddress, succiPort);
 
@@ -60,7 +74,7 @@ int executeUserCommand(const char *input) {
 			}
 
 		} else {
-			putwarning("comando join invalido");
+			putwarning("comando join inválido: argumentos inválidos");
 		}
 
 	} else if(strcmp(command, "leave") == 0 && argCount == 1) {	//comando leave?
@@ -78,7 +92,7 @@ int executeUserCommand(const char *input) {
 		putok("comando show");
 
 		if(curRing == -1) {
-			printf("Nó não pertence a nenhum anel\n");
+			printf("nó não pertence a nenhum anel\n");
 		} else {
 			printf("Anel: %d\n", curRing);
 			printf("Id: %d\n", curNode.id);
@@ -103,8 +117,12 @@ int executeUserCommand(const char *input) {
 	} else if(strcmp(command, "search") == 0 && argCount == 2) {	//comando search?
 		//o comando search aceita apenas 1 argumento
 		//tratar comando
-		int searchedId = ring;
-		putok("comando search: %d", searchedId);
+
+		int searchedId	= -1;
+		if(stringToUInt(arg[0], (unsigned int*) &searchedId) == -1) {
+			putwarning("comando search inválido: argumentos inválidos");
+			return -1;
+		}
 
 		//testar se o no ja esta registado
 		if(curRing == -1) {
@@ -112,10 +130,13 @@ int executeUserCommand(const char *input) {
 			return -1;
 		}
 
+		putok("comando search: %d", searchedId);
+
+		//verificar se o nó que efectuou a pesquisa é o nó responsável
 		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
 			//nó é responsavel pelo id procurado
 			//responder com o próprio IP e porto
-			printf("Nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
+			printf("nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
 
 			error = 0;	//nao ocorreu nenhum erro
 		} else {
