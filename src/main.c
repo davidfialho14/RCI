@@ -126,7 +126,12 @@ int main(int argc, char const *argv[]) {
 						buffer[length - 1] = '\0';
 
 					if(handleMessage(buffer, connectionFd) == -1) {
-						puterror("main", "mensagem falhou");
+						//notificar quem enviou o pedido que ocorreu um erro
+						char answer[] = "ERROR\n";
+						sendMessage(connectionFd, answer);
+						//terminar ligacao
+						close(connectionFd);
+						rmConnection(connectionFd);
 					}
 				}
 			}

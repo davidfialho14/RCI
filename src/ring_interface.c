@@ -140,12 +140,6 @@ int handleMessage(const char* message, int fd) {
 		puterror("handleMessage", "mensagem invalida");
 	}
 
-	if(error == -1) {
-		//notificar quem enviou o pedido que ocorreu um erro
-		char answer[] = "ERROR\n";
-		sendMessage(fd, answer);
-	}
-
 	return error;
 }
 
