@@ -25,6 +25,8 @@ int handleMessage(const char* message, int fd) {
 	int argCount = sscanf(message, "%s %s %s %s %s %s %s", command, arg[0], arg[1], arg[2],
 															arg[3], arg[4], extra);
 
+	//identificar tipo de mensagem
+
 	if(strcmp(command, "QRY") == 0 && argCount == 3) {	//QRY message
 		putok("mensagem QRY");
 
@@ -68,7 +70,7 @@ int handleMessage(const char* message, int fd) {
 			}
 		}
 
-	} else if(strcmp(command, "CON") == 0 && argCount == 4) {
+	} else if(strcmp(command, "CON") == 0 && argCount == 4) {	//mensagem CON
 		putok("mensagem de CON");
 
 		int id;
@@ -90,7 +92,7 @@ int handleMessage(const char* message, int fd) {
 			puterror("handleMessage", "CON falhou");
 		}
 
-	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {
+	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {	//mensagem NEW
 		putok("mensagem de NEW");
 
 		int id;
@@ -112,7 +114,7 @@ int handleMessage(const char* message, int fd) {
 			puterror("handleMessage", "NEW falhou");
 		}
 
-	} else if(strcmp(command, "ID") == 0 && argCount == 2) {
+	} else if(strcmp(command, "ID") == 0 && argCount == 2) {	//mensagem ID
 		putok("mensagem ID");
 
 		int nodeId;
@@ -129,13 +131,19 @@ int handleMessage(const char* message, int fd) {
 
 		error = handleID(nodeId, fd);
 
-	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {
+	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {	//mensagem BOOT
 		putok("mensagem BOOT");
 		iAmStartNode = TRUE;
 		error = 0;
 
 	} else {
 		puterror("handleMessage", "mensagem invalida");
+	}
+
+	if(error == -1) {
+		//notificar quem enviou o pedido que ocorreu um erro
+		char answer[] = "ERROR\n";
+		sendMessage(fd, answer);
 	}
 
 	return error;

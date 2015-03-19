@@ -76,6 +76,8 @@ int connectToNode(const char *nodeAddress, const char *nodePort);
 
 int readMessage(int fd, char *message, size_t messageSize);
 
+int sendMessage(int fd, const char *message);
+
 int sendMessageNEW(int fd);
 
 int sendMessageCON(int id, const char *ip, const char *port, int fd);
