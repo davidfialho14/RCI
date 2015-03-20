@@ -32,17 +32,30 @@ void putwarning(const char *format, ...) {
 	}
 }
 
-void puterror(const char *functionName, const char *format, ...) {
+void puterror(const char *format, ...) {
+	va_list argp;			//lista de argumentos
+	va_start(argp, format);
+	fprintf(stderr, "ERRO: ");
+	vfprintf(stderr, format, argp);
+	if(errno != 0) {
+		fprintf(stderr, ": %s", strerror(errno));
+	}
+	fprintf(stderr, "\n");
+	va_end(argp);
+}
+
+void putdebug(const char *functionName, const char *format, ...) {
 	openLogFile();
 	if(logFile != NULL) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
-		fprintf(logFile, "ERRO: %s ", functionName);
-		vfprintf(logFile, format, argp);
+
+		fprintf(stderr, "DEBUG: %s: ", functionName);
+		vfprintf(stderr, format, argp);
 		if(errno != 0) {
-			fprintf(logFile, ": %s", strerror(errno));
+			fprintf(stderr, ": %s", strerror(errno));
 		}
-		fprintf(logFile, "\n");
+
 		va_end(argp);
 		closeLogFile();
 	}
@@ -55,21 +68,6 @@ void putok(const char *format, ...) {
 		va_start(argp, format);
 
 		fprintf(logFile, "OK: ");
-		vfprintf(logFile, format, argp);
-		fprintf(logFile, "\n");
-
-		va_end(argp);
-		closeLogFile();
-	}
-}
-
-void putdebug(const char *format, ...) {
-	openLogFile();
-	if(logFile != NULL) {
-		va_list argp;			//lista de argumentos
-		va_start(argp, format);
-
-		fprintf(logFile, "DEBUG: ");
 		vfprintf(logFile, format, argp);
 		fprintf(logFile, "\n");
 
