@@ -82,8 +82,8 @@ void putmessage(const char *format, ...) {
 	va_list argp;			//lista de argumentos
 	va_start(argp, format);
 
-	fprintf(logFile, "> ");
-	vfprintf(logFile, format, argp);
+	fprintf(stdout, "> ");
+	vfprintf(stdout, format, argp);
 
 	va_end(argp);
 }

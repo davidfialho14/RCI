@@ -164,6 +164,7 @@ int executeUserCommand(const char *input) {
 		error = 1;	//indica que se pretende sair do programa
 
 	} else {
+		putmessage("comando inválido\n");
 		error = -1;
 	}
 

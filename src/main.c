@@ -54,7 +54,6 @@ int main(int argc, char const *argv[]) {
 		}
 
 		//esperar por descritor pronto para ler
-		printf("> ");
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
 			puterror("main", "select falhou");
