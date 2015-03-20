@@ -36,19 +36,19 @@ int initializeCommunication(int argc, const char *argv[]) {
 	succiNode.id = succiNode.fd = -1;
 
 	if( (initialized = readInputArgs(argc, argv)) != 0) {
-		puterror("initializeCommunication", "leitura dos argumentos de entrada");
+		putdebug("initializeCommunication", "leitura dos argumentos de entrada");
 		return initialized;
 	}
 	putok("argumentos de entrada lidos com sucesso");	//debug
 
 	if( (initialized = listenSocket()) != 0) {
-		puterror("initializeCommunication", "listen socket falhou");
+		puterror("listen socket falhou");
 		return initialized;
 	}
 	putok("socket de escuta criado");	//debug
 
 	if( (initialized = startServerSocket()) != 0) {
-		puterror("initializeCommunication", "socket do servidor de arranque falhou");
+		puterror("socket do servidor de arranque falhou");
 		return initialized;
 	}
 	putok("socket de so servidor de arranque criado");	//debug
@@ -75,7 +75,7 @@ int readInputArgs(int argc, const char *argv[]) {
 	} else if(argc == 7) {
 		inputMode = 2;		//com endereco do servidor de arranque
 	} else {
-		puts("usage: ddt [-t ringport] [-i bootip] [-p bootport]");
+		puterror("usage: ddt [-t ringport] [-i bootip] [-p bootport]");
 		return -1;
 	}
 
@@ -120,9 +120,10 @@ int readInputArgs(int argc, const char *argv[]) {
 	}
 
 	if(error == 0) {
-		putok("ringport: %s", curNode.port);	//debug
-		putok("bootIP: %s", startServerIp);		//debug
-		putok("bootport: %s", startServerPort);	//debug
+		putmessage("Dados de arranque");
+		putmessage("ringport: %s\n", curNode.port);	//debug
+		putmessage("bootIP: %s\n", startServerIp);		//debug
+		putmessage("bootport: %s\n", startServerPort);	//debug
 	}
 
 	return error;
@@ -138,28 +139,25 @@ int listenSocket() {
 
 	struct addrinfo hints;
 	bzero(&hints, sizeof(hints));
-	hints.ai_family = AF_INET; 			//permitir o uso de IPv4 e IPv6
+	hints.ai_family = AF_INET; 				//permitir o uso de IPv4 e IPv6
 	hints.ai_socktype = SOCK_STREAM;	//definir como TCP
-	hints.ai_flags = AI_PASSIVE;		//usar endereco IP da maquina
+	hints.ai_flags = AI_PASSIVE;			//usar endereco IP da maquina
 
 	if(getHostnameAddress(curNode.ip) == 0) {
 
 		struct addrinfo *servinfo;		//lista de enderecos
-		//obter enderecos do servidor de arranque
+		//obter enderecos do host
 		if (getaddrinfo(NULL, curNode.port, &hints, &servinfo) != 0) {
-			puterror("listenSocket", "getaddrinfo falhou");
-
+			putdebug("listenSocket", "não foi possível obter o endereço para fzer bind");
 		} else {
 			//iterar pelos varios enderecos ate conseguir criar um socket e fazer bind
 			struct addrinfo *aux = servinfo;
 			while(aux != NULL) {
-				if( (curNode.fd = socket(aux->ai_family,
-						aux->ai_socktype, aux->ai_protocol)) != -1) {
+				if( (curNode.fd = socket(aux->ai_family, aux->ai_socktype, aux->ai_protocol)) != -1) {
 					//criado um socket com sucesso
 					//indicar ao socket para dispensar o porto quando a aplicacao termina
 					int opt = -1;
-					setsockopt(curNode.fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&opt,
-							sizeof(int));
+					setsockopt(curNode.fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&opt, sizeof(int));
 
 					//fazer bind ao endereco obtido
 					if(bind(curNode.fd, aux->ai_addr,  aux->ai_addrlen) == -1) {
@@ -200,7 +198,7 @@ int startServerSocket() {
 
 	struct addrinfo *servinfo;
 	if (getaddrinfo(startServerIp, startServerPort, &hints, &servinfo) != 0) {
-		puterror("startServerSocket", "getaddrinfo falhou");
+		putdebug("startServerSocket", "não foi possível obter endereço do servidor de arranque");
 
 	} else {
 		//iterar pelos varios enderecos ate conseguir criar um socket com sucesso
@@ -218,7 +216,7 @@ int startServerSocket() {
 		}
 
 		if(aux == NULL) {
-			puterror("startServerSocket", "nao foi criado nenhum socket para o servidor de arranque");
+			putdebug("startServerSocket", "não foi criado nenhum socket para o servidor de arranque");
 		}
 
 		//limpar recursos
@@ -242,7 +240,7 @@ int getStartNode(int ringId, Node* startNode) {
 	//enviar pedido
 	if(sendto(startServerFd, message, strlen(message), 0,
 			&startServerAddress, sizeof(startServerAddress)) <= 0) {
-		puterror("getStartNode", "envio de pedido de registo");
+		putdebug("getStartNode", "envio de pedido de registo falhou");
 	} else {
 		//limpar buffer
 		bzero(message, sizeof(message));
@@ -251,30 +249,30 @@ int getStartNode(int ringId, Node* startNode) {
 		//receber reposta do servidor de arranque
 		if(recvfrom(startServerFd, message, sizeof(message), 0,
 					&startServerAddress, &addrlen) <= 0) {
-			puterror("getStartNode", "resposta do SA nao recebida");
+			putdebug("getStartNode", "resposta do servidor de arranque não recebida");
+
 		} else {
 			if(strcmp(message, "EMPTY") == 0) {
 				//anel esta vazio
 				error = 0;
 			} else {
 
-				char command[BUFSIZE];				//comando (esperado BRSP)
+				char command[BUFSIZE];						//comando (esperado BRSP)
 				int ring = -1, startNodeId = -1;	//numero do anel
 				char startNodeIp[IPSIZE], startNodePort[IPSIZE];
 				char extra[BUFSIZE];	//usado para testar se a resposta tem argumentos a mais
 
 				//filtrar resposta
-				int argCount = sscanf(message,
-						"%s %d %d %s %s %s", command, &ring, &startNodeId,
-											 startNodeIp, startNodePort, extra);
+				int argCount = sscanf(message, "%s %d %d %s %s %s", command, &ring, &startNodeId,
+											 	startNodeIp, startNodePort, extra);
 
 				//testar se o numero do anel na resposta corresponde ao anel do pedido
 				if(ring != ringId) {
-					puterror("getStartNode",
-				"resposta SA incorrecta: o anel introduzido e o anel recebido sao diferentes");
+					putdebug("getStartNode",
+						"resposta servidor de arranque incorrecta: o anel introduzido e o anel recebido são diferentes");
 				} else {
 
-					//verificar respota
+					//verificar resposta
 					if(argCount == 5 && strcmp(command, "BRSP") == 0) {
 
 						//retornar (por referencia) dados do nó de arranque do anel
@@ -284,8 +282,8 @@ int getStartNode(int ringId, Node* startNode) {
 
 						error = 1;	//o anel nao esta vazio e resposta tem foramto correcto
 					} else {
-						puterror("getStartNode",
-								"resposta do SA incorrecta: comando nao é BRSP");
+						putdebug("getStartNode",
+							"resposta do servidor de arranque incorrecta: comando não é BRSP");
 					}
 				}
 			}
@@ -308,9 +306,10 @@ int registerAsStartingNode(int ringId, const Node *node) {
 		//limpar buffer de mensagem
 		bzero(message, sizeof(message));
 		//receber reposta do servidor de arranque
-		if(recvfrom(startServerFd, message, sizeof(message), 0,
-				&startServerAddress, &addrlen) > 0) {
-
+		if(recvfrom(startServerFd, message, sizeof(message), 0, &startServerAddress, &addrlen) <= 0) {
+			putdebug("registerAsStartingNode",
+				"resposta do servidor de arranque não foi recebida");
+		} else {
 			//verificar se a reposta do servidor esta correcta
 			if(strcmp(message, "OK") == 0) {
 				//mensagem de resposta correcta
@@ -318,11 +317,9 @@ int registerAsStartingNode(int ringId, const Node *node) {
 				curRing = ringId;
 				error = 0;
 			} else {
-				puterror("registerAsStartingNode",
-						"resposta do SA incorrecta (%s): resposta recebida nao foi OK", message);
+				putdebug("registerAsStartingNode",
+						"resposta do servidor de arranque incorrecta: resposta recebida não foi OK");
 			}
-		} else {
-			puterror("registerAsStartingNode", "resposta do SA falhou: nao foi recebido o  OK");
 		}
 	}
 	return error;
@@ -336,18 +333,16 @@ int unregisterRing(int ringId) {
 	sprintf(message, "UNR %d", ringId);
 
 	//enviar pedido
-	if(sendto(startServerFd, message, strlen(message), 0,
-			&startServerAddress, sizeof(startServerAddress)) <= 0) {
-		puterror("getStartNode", "envio de pedido de registo");
+	if(sendto(startServerFd, message, strlen(message), 0, &startServerAddress, sizeof(startServerAddress)) <= 0) {
+		putdebug("getStartNode", "envio de pedido de registo falhou");
 	} else {
 		//limpar buffer
 		bzero(message, sizeof(message));
 		socklen_t addrlen = sizeof(startServerAddress);	//comprimento do endereco
 
 		//receber reposta do servidor de arranque
-		if(recvfrom(startServerFd, message, sizeof(message), 0,
-					&startServerAddress, &addrlen) <= 0) {
-			puterror("getStartNode", "resposta do SA nao recebida");
+		if(recvfrom(startServerFd, message, sizeof(message), 0, &startServerAddress, &addrlen) <= 0) {
+			putdebug("getStartNode", "resposta do servidor de arranque não foi recebida");
 		} else {
 			if(strcmp(message, "OK") == 0) {
 				error = 0;
@@ -373,8 +368,7 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 	struct addrinfo *servinfo;			//lista de enderecos
 	//obter enderecos do succi
 	if (getaddrinfo(nodeAddress, nodePort, &hints, &servinfo) != 0) {
-		puterror("connectToNode", "getaddrinfo falhou");
-
+		putdebug("connectToNode", "endereço do nó é inválido");
 	} else {
 		//iterar pelos varios enderecos ate conseguir criar um socket e fazer connect
 		struct addrinfo *aux = servinfo;
@@ -384,11 +378,11 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 				//criado um socket com sucesso
 				//ligar ao endereco
 				if(connect(nodeFd, aux->ai_addr,  aux->ai_addrlen) == -1) {
-					puterror("connectToNode", "connect falhou");
+					putdebug("connectToNode", "tentativa de ligação a um nó falhada");
 					close(nodeFd);	//fechar socket criado
 					nodeFd = -1;
 				} else {
-					putok("ligacao estabelecida %d com: %s %s", nodeFd, nodeAddress, nodePort);
+					putok("ligação %d estabelecida com: %s %s", nodeFd, nodeAddress, nodePort);
 					break;	//sair apos ligacao ter sido estabelecida
 				}
 			}
@@ -396,7 +390,7 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 		}
 
 		if(aux == NULL) {
-			puterror("connectToNode", "nao se conseguiu ligar a nenhum endereco");
+			putdebug("connectToNode", "não foi possível ligar ao nó %s %s", nodeAddress, nodePort);
 		}
 
 		//limpar recursos
@@ -430,6 +424,7 @@ int readMessage(int fd, char *message, size_t messageSize) {
 				strcat(message, buffer);
 			} else {
 				//mensagem total demasiado grande
+				putdebug("readMessage", "mensagem recebida excedeu limite de comprimento");
 				return -1;
 			}
 		}
@@ -450,7 +445,7 @@ int sendMessage(int fd, const char *message) {
 	int error = -1;
 
 	if(send(fd, message, strlen(message), MSG_NOSIGNAL) <= 0) {
-		puterror("sendMessage", "envio de mensagem");
+		putdebug("sendMessage", "envio de mensagem");
 	} else {
 		putok("mensagem enviada para fd %d: %s", fd, message);
 		error = 0;
@@ -504,7 +499,7 @@ int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
 
 	//ler mensagem
 	if(readMessage(fd, answer, sizeof(answer)) <= 0) {
-		putok("ligacao %d terminada durante espera por RSP", fd);
+		putdebug("waitForRSP", "ligação %d terminada durante espera por RSP", fd);
 	} else {
 		//mensagem recebida com successo
 
@@ -513,19 +508,18 @@ int waitForRSP(int fd, char *answer, int searcherId, int searchedId,
 		char extra[BUFSIZE];
 
 		//ler resposta
-		if(sscanf(answer, "%s %d %d %d %s %s %s",
-				command, &l, &k, ownerId, ownerIp, ownerPort, extra) == 6) {
+		if(sscanf(answer, "%s %d %d %d %s %s %s", command, &l, &k, ownerId, ownerIp, ownerPort, extra) == 6) {
 
 			//verificar se os parametros da resposta batem certo com o pedido
 			if(l != searcherId || k != searchedId) {
-				puterror("executeQRY", "resposta com parametros incorrectos: %s", answer);
+				putdebug("executeQRY", "resposta com parâmetros incorrectos: %s", answer);
 			} else {
 				//retornar id, ip e porto do nó responsavel
 				error = 0;
 			}
 
 		} else {
-			puterror("executeQRY", "resposta recebida incorrecta: %s", answer);
+			putdebug("executeQRY", "resposta recebida incorrecta: %s", answer);
 		}
 	}
 
@@ -574,7 +568,7 @@ int waitForSUCC(int fd, Node *succNode) {
 	char message[BUFSIZE];
 	bzero(message, sizeof(message));	//limpar buffer
 	if( (error = readMessage(fd, message, sizeof(message))) == -1) {
-		puterror("waitForSUCC", "leitura da respotas SUCC");
+		putdebug("waitForSUCC", "leitura da resposta SUCC falhada");
 	} else {
 
 		char command[BUFSIZE];	//comando da resposta
@@ -588,7 +582,7 @@ int waitForSUCC(int fd, Node *succNode) {
 			error = 0;
 
 		} else {
-			puterror("waitForSUCC", "mensagem de SUCC incorrecta");
+			putdebug("waitForSUCC", "mensagem de SUCC recebida incorrecta");
 			error = -1;
 		}
 	}
