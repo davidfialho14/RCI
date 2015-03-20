@@ -36,19 +36,19 @@ int initializeCommunication(int argc, const char *argv[]) {
 	succiNode.id = succiNode.fd = -1;
 
 	if( (initialized = readInputArgs(argc, argv)) != 0) {
-		putwarning("leitura dos argumentos de entrada");
+		puterror("initializeCommunication", "leitura dos argumentos de entrada");
 		return initialized;
 	}
 	putok("argumentos de entrada lidos com sucesso");	//debug
 
 	if( (initialized = listenSocket()) != 0) {
-		putwarning("listen socket falhou");
+		puterror("initializeCommunication", "listen socket falhou");
 		return initialized;
 	}
 	putok("socket de escuta criado");	//debug
 
 	if( (initialized = startServerSocket()) != 0) {
-		putwarning("socket do servidor de arranque falhou");
+		puterror("initializeCommunication", "socket do servidor de arranque falhou");
 		return initialized;
 	}
 	putok("socket de so servidor de arranque criado");	//debug
@@ -75,7 +75,7 @@ int readInputArgs(int argc, const char *argv[]) {
 	} else if(argc == 7) {
 		inputMode = 2;		//com endereco do servidor de arranque
 	} else {
-		putwarning("usage: ddt [-t ringport] [-i bootip] [-p bootport]");
+		puts("usage: ddt [-t ringport] [-i bootip] [-p bootport]");
 		return -1;
 	}
 
@@ -218,8 +218,7 @@ int startServerSocket() {
 		}
 
 		if(aux == NULL) {
-			puterror("startServerSocket",
-					"nao foi criado nenhum socket para o servidor de arranque");
+			puterror("startServerSocket", "nao foi criado nenhum socket para o servidor de arranque");
 		}
 
 		//limpar recursos

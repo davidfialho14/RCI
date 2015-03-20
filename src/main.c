@@ -42,14 +42,12 @@ int main(int argc, char const *argv[]) {
 		//adicionar stdin ao conjunto de fds
 		FD_SET(STDIN_FILENO, &readFds);
 
-		putchar('\n');
 		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
 		putdebug("SucciNode - id: %d ip: %s port: %s fd: %d",
 						succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 		putdebug("PrediNode - id: %d ip: %s port: %s fd: %d",
 						prediNode.id, prediNode.ip, prediNode.port, prediNode.fd);
-		putchar('\n');
 
 		if(maxFd < getMaxConnection()) {
 			maxFd = getMaxConnection();
@@ -59,7 +57,6 @@ int main(int argc, char const *argv[]) {
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
 			puterror("main", "select falhou");
-			sleep(5);
 			continue;
 		}
 
@@ -71,9 +68,9 @@ int main(int argc, char const *argv[]) {
 			//aceitar ligacao
 			int connectionFd;
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
-				puterror("main", "ligacao nao foi aceite");
+				puterror("main", "ligação não foi aceite");
 			} else {
-				putdebug("nova ligacao %d addr: %s %d", connectionFd, inet_ntoa(addr.sin_addr));
+				putdebug("nova ligação %d addr: %s %d", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
 			}
@@ -89,7 +86,7 @@ int main(int argc, char const *argv[]) {
 
 			int errorCode = executeUserCommand(buffer);
 			switch(errorCode) {
-				case 0: 	break;	//comando processado correctamente
+				case 0: 	putok("comando de utilizador processado com sucesso"); break;
 				case -1: 	puterror("main", "falha no processamento do comando"); break;
 				case 1:		quit = TRUE; continue;	//sair do programa
 			}

@@ -31,10 +31,10 @@ int executeUserCommand(const char *input) {
 	if(strcmp(command, "join") == 0) { 			//comando join?
 		//comando join lido
 
-		//testar se o no ja esta registado
+		//testar se o nó já pertence a um anel
 		if(curRing != -1) {
-			printf("o nó já se encontra registado no anel %d\n", curRing);
-			return -1;	//retornar erro
+			printf("o nó já está registado no anel %d\n", curRing);
+			return -1;
 		}
 
 		int ring = -1; 		//args[0]
@@ -42,7 +42,7 @@ int executeUserCommand(const char *input) {
 
 		if(stringToUInt(arg[0], (unsigned int*) &ring) == -1 ||
 		stringToUInt(arg[1], (unsigned int*) &nodeId) == -1) {
-			putwarning("comando join inválido: argumentos inválidos");
+			puts("comando join inválido: argumentos inválidos");
 			return -1;	//retornar erro
 		}
 
@@ -59,7 +59,7 @@ int executeUserCommand(const char *input) {
 			//tratar join sem pesquisa
 			int succiId	= -1;
 			if(stringToUInt(arg[2], (unsigned int*) &succiId) == -1) {
-				putwarning("comando join inválido: argumentos inválidos");
+				puts("comando join inválido: argumentos inválidos");
 				return -1;
 			}
 
@@ -74,7 +74,7 @@ int executeUserCommand(const char *input) {
 			}
 
 		} else {
-			putwarning("comando join inválido: argumentos inválidos");
+			puts("comando join inválido: argumentos inválidos");
 		}
 
 	} else if(strcmp(command, "leave") == 0 && argCount == 1) {	//comando leave?
@@ -120,13 +120,13 @@ int executeUserCommand(const char *input) {
 
 		int searchedId	= -1;
 		if(stringToUInt(arg[0], (unsigned int*) &searchedId) == -1) {
-			putwarning("comando search inválido: argumentos inválidos");
+			puts("comando search inválido: argumentos inválidos");
 			return -1;
 		}
 
 		//testar se o no ja esta registado
 		if(curRing == -1) {
-			printf("o anel nao esta registado em nenhum anel\n");
+			puts("o anel não está registado em nenhum aneis");
 			return -1;
 		}
 
@@ -136,8 +136,8 @@ int executeUserCommand(const char *input) {
 		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
 			//nó é responsavel pelo id procurado
 			//responder com o próprio IP e porto
-			printf("nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
-
+			printf("nó responsavel por %d:\n", searchedId);
+			printf("\tid: %d ip: %s porto: %s\n", curNode.id, curNode.ip, curNode.port);
 			error = 0;	//nao ocorreu nenhum erro
 		} else {
 			int ownerId;
@@ -147,7 +147,7 @@ int executeUserCommand(const char *input) {
 				puterror("executeUserCommand", "search falhou");
 			} else if(error == 1) {
 				//o nó actual foi quem iniciou a procura
-				printf("Nó responsavel por %d:\n", searchedId);
+				printf("nó responsavel por %d:\n", searchedId);
 				printf("\tid: %d ip: %s porto: %s\n", ownerId, ownerIp, ownerPort);
 				error = 0;
 			} else {
@@ -211,7 +211,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 		if(registerAsStartingNode(ring, &node) == -1) {
 			puterror("executeDebugJoin", "registo de no de arranque falhou");
 		} else {
-			putok("registado no anel %d com id %d", ring, nodeId);
+			printf("registado no anel %d com id %d\n", ring, nodeId);
 			//actualizar informacoes do nó tendo em conta que é o unico nó no anel
 			curRing = ring;						//definir anel do nó
 			succiNode.id = succiNode.fd = -1;	//succi ainda nao definido
@@ -351,6 +351,9 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 			strcpy(succiNode.ip, succiAddress);
 			strcpy(succiNode.port, succiPort);
 			succiNode.fd = succiFd;
+
+			printf("novo nó inserido no anel %d com succi %d %s %s\n",
+				curRing, succiNode.id, succiNode.ip, succiNode.port);
 		}
 	}
 
