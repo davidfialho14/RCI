@@ -77,3 +77,13 @@ void putdebug(const char *format, ...) {
 		closeLogFile();
 	}
 }
+
+void putmessage(const char *format, ...) {
+	va_list argp;			//lista de argumentos
+	va_start(argp, format);
+
+	fprintf(logFile, "> ");
+	vfprintf(logFile, format, argp);
+
+	va_end(argp);
+}

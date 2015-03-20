@@ -54,6 +54,7 @@ int main(int argc, char const *argv[]) {
 		}
 
 		//esperar por descritor pronto para ler
+		printf("> ");
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
 			puterror("main", "select falhou");
@@ -88,7 +89,7 @@ int main(int argc, char const *argv[]) {
 			switch(errorCode) {
 				case 0: 	putok("comando de utilizador processado com sucesso"); break;
 				case -1: 	puterror("main", "falha no processamento do comando"); break;
-				case 1:		quit = TRUE; continue;	//sair do programa
+				case 1:		putmessage("programa vai sair"); quit = TRUE; continue;
 			}
 		}
 
