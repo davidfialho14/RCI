@@ -24,9 +24,9 @@ void putwarning(const char *format, ...) {
 	if(logFile != NULL) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
-		fprintf(stdout, "WARN: ");
-		vfprintf(stdout, format, argp);
-		fprintf(stdout, "\n");
+		fprintf(logFile, "WARN: ");
+		vfprintf(logFile, format, argp);
+		fprintf(logFile, "\n");
 		va_end(argp);
 		closeLogFile();
 	}
@@ -37,12 +37,12 @@ void puterror(const char *functionName, const char *format, ...) {
 	if(logFile != NULL) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
-		fprintf(stderr, "ERRO: %s ", functionName);
-		vfprintf(stderr, format, argp);
+		fprintf(logFile, "ERRO: %s ", functionName);
+		vfprintf(logFile, format, argp);
 		if(errno != 0) {
-			fprintf(stderr, ": %s", strerror(errno));
+			fprintf(logFile, ": %s", strerror(errno));
 		}
-		fprintf(stderr, "\n");
+		fprintf(logFile, "\n");
 		va_end(argp);
 		closeLogFile();
 	}
@@ -54,9 +54,9 @@ void putok(const char *format, ...) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
 
-		fprintf(stdout, "OK: ");
-		vfprintf(stdout, format, argp);
-		fprintf(stdout, "\n");
+		fprintf(logFile, "OK: ");
+		vfprintf(logFile, format, argp);
+		fprintf(logFile, "\n");
 
 		va_end(argp);
 		closeLogFile();
@@ -69,9 +69,9 @@ void putdebug(const char *format, ...) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
 
-		fprintf(stdout, "DEBUG: ");
-		vfprintf(stdout, format, argp);
-		fprintf(stdout, "\n");
+		fprintf(logFile, "DEBUG: ");
+		vfprintf(logFile, format, argp);
+		fprintf(logFile, "\n");
 
 		va_end(argp);
 		closeLogFile();
