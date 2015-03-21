@@ -175,6 +175,8 @@ int executeUserCommand(const char *input) {
 
 		if( (error = leave()) == -1) {
 			putdebug("executeUserCommand", "leave falhou");
+		} else {
+			putmessage("nó saiu do anel com sucesso\n");
 		}
 
 	} else if(strcmp(command, "exit") == 0 && argCount == 1) {	//comando exit?
