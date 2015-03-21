@@ -259,7 +259,7 @@ int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char 
 	}
 
 	//passar query ao succi
-	putdebug("enviar QRY a succi (%d, %s, %s, %d", succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
+	putdebug("handleQRY", "enviar QRY a succi (%d, %s, %s, %d)", succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 	if( (error = sendMessageQRY(succiNode.fd, searcherId, searchedId)) == -1) {
 		putdebug("handleQRY", "envio de mensagem de QRY falhou");
 

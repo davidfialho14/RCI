@@ -42,11 +42,11 @@ int main(int argc, char const *argv[]) {
 		//adicionar stdin ao conjunto de fds
 		FD_SET(STDIN_FILENO, &readFds);
 
-		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
+		putdebug("main", "CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
-		putdebug("SucciNode - id: %d ip: %s port: %s fd: %d",
+		putdebug("main", "SucciNode - id: %d ip: %s port: %s fd: %d",
 						succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
-		putdebug("PrediNode - id: %d ip: %s port: %s fd: %d",
+		putdebug("main", "PrediNode - id: %d ip: %s port: %s fd: %d",
 						prediNode.id, prediNode.ip, prediNode.port, prediNode.fd);
 
 		if(maxFd < getMaxConnection()) {
@@ -70,7 +70,7 @@ int main(int argc, char const *argv[]) {
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
 				putdebug("main", "ligação não foi aceite");
 			} else {
-				putdebug("nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
+				putdebug("main", "nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
 			}
@@ -82,7 +82,7 @@ int main(int argc, char const *argv[]) {
 			fgets(buffer, BUFSIZE, stdin);
 
 			//executar comando do utilizador
-			putdebug("processar comando do utilizador");
+			putdebug("main", "processar comando do utilizador");
 
 			int errorCode = executeUserCommand(buffer);
 			switch(errorCode) {

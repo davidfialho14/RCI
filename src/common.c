@@ -50,11 +50,12 @@ void putdebug(const char *functionName, const char *format, ...) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
 
-		fprintf(stderr, "DEBUG: %s: ", functionName);
-		vfprintf(stderr, format, argp);
+		fprintf(logFile, "DEBUG: %s: ", functionName);
+		vfprintf(logFile, format, argp);
 		if(errno != 0) {
-			fprintf(stderr, ": %s", strerror(errno));
+			fprintf(logFile, ": %s", strerror(errno));
 		}
+		fprintf(logFile, "\n");
 
 		va_end(argp);
 		closeLogFile();
