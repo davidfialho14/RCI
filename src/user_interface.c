@@ -84,21 +84,6 @@ int executeUserCommand(const char *input) {
 			putmessage("comando join inválido: argumentos inválidos\n");
 		}
 
-	} else if(strcmp(command, "leave") == 0 && argCount == 1) {	//comando leave?
-		//o comando leave nao tem argumentos
-		//tratar comando
-		putok("comando leave");
-
-		//testar se o nó está registado num anel
-		if(curRing == -1) {
-			putmessage("nó não se encontra registado em nenhum anel\n");
-			return -1;
-		}
-
-		if( (error = leave()) == -1) {
-			putdebug("executeUserCommand", "leave falhou");
-		}
-
 	} else if(strcmp(command, "show") == 0 && argCount == 1) {	//comando show?
 		//o comando show nao tem argumentos
 		//tratar comando
@@ -175,6 +160,21 @@ int executeUserCommand(const char *input) {
 				putdebug("executeUserCommand", "mensagem não devia ter sido retransmitida");
 				error = -1;
 			}
+		}
+
+	} else if(strcmp(command, "leave") == 0 && argCount == 1) {	//comando leave?
+		//o comando leave nao tem argumentos
+		//tratar comando
+		putok("comando leave");
+
+		//testar se o nó está registado num anel
+		if(curRing == -1) {
+			putmessage("nó não se encontra registado em nenhum anel\n");
+			return -1;
+		}
+
+		if( (error = leave()) == -1) {
+			putdebug("executeUserCommand", "leave falhou");
 		}
 
 	} else if(strcmp(command, "exit") == 0 && argCount == 1) {	//comando exit?
@@ -318,13 +318,15 @@ int leave() {
 		close(succiNode.fd);
 		rmConnection(succiNode.fd);
 		succiNode.fd = -1;
-		succiNode.id = -1;
 
 		//enviar informacoes do succi a predi
 		if( (error = sendMessageCON(succiNode.id, succiNode.ip, succiNode.port, prediNode.fd)) == -1) {
 			putdebug("leave", "mensagem de CON a predi");
 			return -1;
 		}
+
+		//id so pode ser apagado depois das informacoes do succi serem enviadas a predi
+		succiNode.id = -1;
 
 		putok("terminei ligacao com predi %d", prediNode.fd);
 		close(prediNode.fd);
