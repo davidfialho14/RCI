@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
 
 	//inicializacao
 	if(initializeCommunication(argc, argv) != 0) exit(-1); //inicailizacao falhou
-	putok("inicializacao completa\n");
+	putok("inicialização completa\n");
 
 	//inicializar conjunto de ligacoes
 	initializeConnectionSet();
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[]) {
 		//esperar por descritor pronto para ler
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
-			puterror("main", "select falhou");
+			putdebug("main", "select falhou");
 			continue;
 		}
 
@@ -68,9 +68,9 @@ int main(int argc, char const *argv[]) {
 			//aceitar ligacao
 			int connectionFd;
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
-				puterror("main", "ligação não foi aceite");
+				putdebug("main", "ligação não foi aceite");
 			} else {
-				putdebug("nova ligação %d addr: %s %d", connectionFd, inet_ntoa(addr.sin_addr));
+				putdebug("nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
 			}
@@ -87,7 +87,7 @@ int main(int argc, char const *argv[]) {
 			int errorCode = executeUserCommand(buffer);
 			switch(errorCode) {
 				case 0: 	putok("comando de utilizador processado com sucesso"); break;
-				case -1: 	puterror("main", "falha no processamento do comando"); break;
+				case -1: 	putdebug("main", "falha no processamento do comando de utilizador"); break;
 				case 1:		putmessage("programa vai sair"); quit = TRUE; continue;
 			}
 		}
@@ -107,10 +107,12 @@ int main(int argc, char const *argv[]) {
 
 					if(connectionFd == succiNode.fd) {
 						succiNode.fd = -1;
+						putok("ligação terminada com succi");
 					}
 
 					if(connectionFd == prediNode.fd) {
 						prediNode.fd = -1;
+						putok("ligação terminada com predi");
 					}
 
 				} else {
