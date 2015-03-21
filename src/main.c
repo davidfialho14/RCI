@@ -88,7 +88,7 @@ int main(int argc, char const *argv[]) {
 			switch(errorCode) {
 				case 0: 	putok("comando de utilizador processado com sucesso"); break;
 				case -1: 	putdebug("main", "falha no processamento do comando de utilizador"); break;
-				case 1:		putmessage("programa vai sair"); quit = TRUE; continue;
+				case 1:		putmessage("programa vai sair\n"); quit = TRUE; continue;
 			}
 		}
 
@@ -107,11 +107,13 @@ int main(int argc, char const *argv[]) {
 
 					if(connectionFd == succiNode.fd) {
 						succiNode.fd = -1;
+						succiNode.id = -1;
 						putok("ligação terminada com succi");
 					}
 
 					if(connectionFd == prediNode.fd) {
 						prediNode.fd = -1;
+						prediNode.id = -1;
 						putok("ligação terminada com predi");
 					}
 

@@ -143,7 +143,13 @@ int executeUserCommand(const char *input) {
 			return -1;
 		}
 
-		putok("comando search: %d", searchedId);
+		//testar o valor do identificador pretendido
+		if(searchedId > MAXID) {
+			putmessage("o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			return -1;
+		}
+
+		putdebug("executeUserCommand", "comando search: %d\n", searchedId);
 
 		//verificar se o nó que efectuou a pesquisa é o nó responsável
 		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
@@ -236,17 +242,20 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			//estabelecer uma ligacao com o nó de arranque
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				putdebug("executeJoin", "ligacao com nó de arranque falhou");
+				puterror("ligação ao nó de arranque do anel falhou");
 			} else {
 
 				//pedir ao nó de arranque as informacoes do seu succi no anel
 				if( (error = sendMessageID(startNode.fd, nodeId)) == -1) {
 					putdebug("executeJoin", "pedido do endereço do succi ao nó de arranque falhou");
+					puterror("comunicação com o nó de arranque do anel falhou");
 				} else {
 
 					//esperar pela resposta do nó de arranque
 					Node succ;
 					if( (error = waitForSUCC(startNode.fd, &succ)) == -1) {
 						putdebug("executeJoin", "espera pela resposta do servidor de arranque");
+						puterror("comunicação com o nó de arranque do anel falhou");
 					} else {
 
 						//fechar ligacao com succi
@@ -266,10 +275,6 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 
 					}
 				}
-			}
-
-			if(error == -1) {
-				puterror("comunicação com o nó de arranque do anel falhou");
 			}
 
 		} else {
@@ -313,6 +318,7 @@ int leave() {
 		close(succiNode.fd);
 		rmConnection(succiNode.fd);
 		succiNode.fd = -1;
+		succiNode.id = -1;
 
 		//enviar informacoes do succi a predi
 		if( (error = sendMessageCON(succiNode.id, succiNode.ip, succiNode.port, prediNode.fd)) == -1) {
@@ -324,6 +330,7 @@ int leave() {
 		close(prediNode.fd);
 		rmConnection(prediNode.fd);
 		prediNode.fd = -1;
+		prediNode.id = -1;
 	}
 
 	//indicar que o nó nao tem anel definido
