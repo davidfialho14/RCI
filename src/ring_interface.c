@@ -35,7 +35,7 @@ int handleMessage(const char* message, int fd) {
 
 		if(stringToUInt(arg[0], (unsigned int*) &searcherId) == -1 ||
 		stringToUInt(arg[1], (unsigned int*) &searchedId) == -1) {
-			puterror("handleMessage", "QRY ids da mensagem invalidos");
+			putdebug("handleMessage", "QRY ids da mensagem inválidos");
 			return -1;
 		}
 
@@ -43,11 +43,11 @@ int handleMessage(const char* message, int fd) {
 		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
 			//nó é responsavel pelo id procurado
 			//responder com o próprio IP e porto
-			putok("sou o nó responsável: %d %s %s\n", curNode.id, curNode.ip, curNode.port);
+			putok("sou o nó responsável por %d: %d %s %s\n", searchedId, curNode.id, curNode.ip, curNode.port);
 			//passar resposta para o predi
 			if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
 					curNode.id, curNode.ip, curNode.port)) == -1) {
-				puterror("handleQRY", "passagem da resposta para o predi");
+					putdebug("handleQRY", "passagem da resposta para o predi falhada");
 			}
 
 			error = 0;	//nao ocorreu nenhum erro
@@ -56,12 +56,12 @@ int handleMessage(const char* message, int fd) {
 			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
 
 			if( (error = handleQRY(searcherId, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
-				puterror("handleMessage", "qry falhou");
+				putdebug("handleMessage", "QRY falhou");
 
 			} else if(error == 1) {
 				//o nó actual foi quem iniciou a procura
 				//isto nao é suposto acontecer aqui
-				puterror("handleMessage", "Nó responsável incorrecto");
+				putdebug("handleMessage", "nó responsável incorrecto");
 				error = -1;
 			} else {
 				//mensagem retransmitida
@@ -75,13 +75,13 @@ int handleMessage(const char* message, int fd) {
 
 		int id;
 		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
-			puterror("handleMessage", "CON id da mensagem invalido");
+			putdebug("handleMessage", "CON id da mensagem inválido");
 			return -1;
 		}
 
 		//testar o valor do identificador pretendido
 		if(id > MAXID) {
-			puterror("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			putdebug("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 			return -1;
 		}
 
@@ -89,7 +89,7 @@ int handleMessage(const char* message, int fd) {
 		//arg[2] - porto
 
 		if( (error = handleCON(id, arg[1], arg[2], fd)) == -1) {
-			puterror("handleMessage", "CON falhou");
+			putdebug("handleMessage", "CON falhou");
 		}
 
 	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {	//mensagem NEW
@@ -97,13 +97,13 @@ int handleMessage(const char* message, int fd) {
 
 		int id;
 		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
-			puterror("handleMessage", "CON id da mensagem invalido");
+			putdebug("handleMessage", "CON id da mensagem inválido");
 			return -1;
 		}
 
 		//testar o valor do identificador pretendido
 		if(id > MAXID) {
-			puterror("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			putdebug("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 			return -1;
 		}
 
@@ -111,7 +111,7 @@ int handleMessage(const char* message, int fd) {
 		//arg[2] - porto
 
 		if( (error = handleNEW(id, arg[1], arg[2], fd)) == -1) {
-			puterror("handleMessage", "NEW falhou");
+			putdebug("handleMessage", "NEW falhou");
 		}
 
 	} else if(strcmp(command, "ID") == 0 && argCount == 2) {	//mensagem ID
@@ -119,13 +119,13 @@ int handleMessage(const char* message, int fd) {
 
 		int nodeId;
 		if(stringToUInt(arg[0], (unsigned int*) &nodeId) == -1) {
-			puterror("handleMessage", "ID id da mensagem invalido");
+			putdebug("handleMessage", "ID id da mensagem inválido");
 			return -1;
 		}
 
 		//testar o valor do identificador pretendido
 		if(nodeId > MAXID) {
-			puterror("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			putdebug("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 			return -1;
 		}
 
@@ -137,7 +137,7 @@ int handleMessage(const char* message, int fd) {
 		error = 0;
 
 	} else {
-		puterror("handleMessage", "mensagem invalida");
+		putdebug("handleMessage", "mensagem inválida");
 	}
 
 	return error;
@@ -157,7 +157,7 @@ int handleNEW(int id, const char *ip, const char *port, int fd) {
 		if(succiNode.fd == -1) {
 
 			if( (succiNode.fd = connectToNode(ip, port)) == -1) {
-				puterror("handleNEW", "ligacao ao novo succi falhou");
+				putdebug("handleNEW", "ligação ao novo succi /%s, %s) falhou", ip, port);
 			} else {
 				//adicionar ao conjunto
 				addConnection(succiNode.fd);
@@ -169,7 +169,7 @@ int handleNEW(int id, const char *ip, const char *port, int fd) {
 
 				//enviar mensagem de CON ao succi
 				if( (error = sendMessageCON(id, ip, port, succiNode.fd)) == -1) {
-					puterror("handleNEW", "mensagem de CON nao enviado ao succi");
+					putdebug("handleNEW", "mensagem de CON não enviada ao succi");
 				}
 			}
 		} else {
@@ -181,7 +181,7 @@ int handleNEW(int id, const char *ip, const char *port, int fd) {
 		if(id != succiNode.id) {
 			//enviar mensagem de CON ao succi
 			if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
-				puterror("handleNEW", "mensagem de CON nao enviado ao succi");
+				putdebug("handleNEW", "mensagem de CON não enviada ao succi");
 			}
 		}
 
@@ -214,13 +214,13 @@ int handleCON(int id, const char *ip, const char *port, int fd) {
 
 	} else {
 		//terminar ligacao com succi
-		putok("terminei ligacao %d", succiNode.fd);
+		putok("terminei ligacao com o succi actual %d", succiNode.fd);
 		close(succiNode.fd);
 		rmConnection(succiNode.fd);
 
 		//ligar ao no recebido
 		if( (succiNode.fd = connectToNode(ip, port)) == -1) {
-			puterror("handleCON", "ligacao ao novo succi falhou");
+			putdebug("handleCON", "ligação ao novo succi falhou");
 		} else {
 			//adicionar ao conjunto
 			addConnection(succiNode.fd);
@@ -229,6 +229,8 @@ int handleCON(int id, const char *ip, const char *port, int fd) {
 			succiNode.id = id;
 			strcpy(succiNode.ip, ip);
 			strcpy(succiNode.port, port);
+
+			putok("ligação estabelecida com o novo succi %s %s", succiNode.ip, succiNode.port);
 
 			//enviar NEW ao novo succi
 			error = sendMessageNEW(succiNode.fd);
@@ -252,24 +254,22 @@ int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char 
 	//testar se nó pertence a algum anel
 	if(curRing == -1) {
 		//nó não pertence a um anel logo não pode fazer uma pesquisa
-		puterror("handleQRY", "nó não pertence a um anel logo não pode fazer uma pesquisa");
+		putdebug("handleQRY", "nó não pertence a um anel logo não pode fazer uma pesquisa");
 		return -1;
 	}
 
 	//passar query ao succi
-	putdebug("enviar QRY a succi (%d, %s, %s, %d",
-			succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
+	putdebug("enviar QRY a succi (%d, %s, %s, %d", succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
 	if( (error = sendMessageQRY(succiNode.fd, searcherId, searchedId)) == -1) {
-		puterror("handleQRY", "mensagem de QRY falhou");
+		putdebug("handleQRY", "envio de mensagem de QRY falhou");
 
 	} else {
 
 		char answer[BUFSIZE];
 		bzero(answer, sizeof(answer));
 		//esperar resposta
-		if( (error = waitForRSP(succiNode.fd, answer, searcherId, searchedId,
-				ownerId, ownerIp, ownerPort)) == -1) {
-			puterror("handleQRY", "espera por resposta");
+		if( (error = waitForRSP(succiNode.fd, answer, searcherId, searchedId, ownerId, ownerIp, ownerPort)) == -1) {
+			putdebug("handleQRY", "espera por resposta falhou");
 		} else {
 
 			if(searcherId == curNode.id) {
@@ -278,8 +278,8 @@ int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char 
 			} else {
 				//passar resposta para o predi
 				if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
-						*ownerId, ownerIp, ownerPort)) == -1) {
-					puterror("handleQRY", "passagem da resposta para o predi");
+							*ownerId, ownerIp, ownerPort)) == -1) {
+					putdebug("handleQRY", "passagem da resposta para o predi falhou");
 				}
 			}
 		}
@@ -302,19 +302,19 @@ int handleID(int id, int fd) {
 	} else {
 
 		if( (error = handleQRY(curNode.id, id, &succNode.id, succNode.ip, succNode.port)) != 1) {
-			puterror("executeUserCommand", "search falhou");
+			putdebug("executeUserCommand", "pesquisa pelo succi falhou");
 			return -1;
 		}
 	}
 
 	//enviar succi encontrado
 	if( (error = sendSUCC(fd, &succNode)) == -1) {
-		puterror("handleID", "envio de SUCC");
+		putdebug("handleID", "envio de SUCC ao nó falhou");
 		error = -1;
 	} else {
 
 		//fechar ligacao
-		putok("terminei ligacao %d", fd);
+		putok("terminei ligacao com o nó %d", fd);
 		close(fd);
 		rmConnection(fd);
 
