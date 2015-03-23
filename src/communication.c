@@ -120,7 +120,7 @@ int readInputArgs(int argc, const char *argv[]) {
 	}
 
 	if(error == 0) {
-		putmessage("Dados de arranque");
+		putmessage("Dados de arranque\n");
 		putmessage("ringport: %s\n", curNode.port);	//debug
 		putmessage("bootIP: %s\n", startServerIp);		//debug
 		putmessage("bootport: %s\n", startServerPort);	//debug
@@ -144,7 +144,7 @@ int listenSocket() {
 	hints.ai_flags = AI_PASSIVE;			//usar endereco IP da maquina
 
 	if(getHostnameAddress(curNode.ip) == 0) {
-
+		putmessage("host ip: %s\n", curNode.ip);
 		struct addrinfo *servinfo;		//lista de enderecos
 		//obter enderecos do host
 		if (getaddrinfo(NULL, curNode.port, &hints, &servinfo) != 0) {
