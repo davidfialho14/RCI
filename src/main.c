@@ -11,9 +11,9 @@
 #include <string.h>
 
 #include "defines.h"
-#include "common.h"
 #include "communication.h"
 #include "connections_set.h"
+#include "error.h"
 #include "ring_interface.h"
 #include "user_interface.h"
 

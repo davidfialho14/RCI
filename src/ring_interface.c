@@ -5,9 +5,9 @@
 
 #include "ring_interface.h"
 #include "defines.h"
-#include "common.h"
 #include "communication.h"
 #include "connections_set.h"
+#include "error.h"
 #include "string_operations.h"
 
 int handleNEW(int id, const char *ip, const char *port, int fd);

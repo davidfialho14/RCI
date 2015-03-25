@@ -6,8 +6,8 @@
 #include "user_interface.h"
 #include "defines.h"
 #include "communication.h"
-#include "common.h"
 #include "connections_set.h"
+#include "error.h"
 #include "ring_interface.h"
 #include "string_operations.h"
 

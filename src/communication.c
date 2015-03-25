@@ -6,8 +6,9 @@
 #include <unistd.h>
 
 #include "communication.h"
+
+#include "error.h"
 #include "string_operations.h"
-#include "common.h"
 #include "network_operations.h"
 
 Node curNode;
