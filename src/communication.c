@@ -442,13 +442,23 @@ int readMessage(int fd, char *message, size_t messageSize) {
 }
 
 int sendMessage(int fd, const char *message) {
-	int error = -1;
+	int error = 0;
+	int bytesLeft = strlen(message);
+	int bytesWritten = 0;
+	const char *ptr = message;
 
-	if(send(fd, message, strlen(message), MSG_NOSIGNAL) <= 0) {
-		putdebug("sendMessage", "envio de mensagem");
-	} else {
+	while(bytesLeft > 0) {
+		if( (bytesWritten = write(fd, ptr, bytesLeft)) <= 0) {
+			putdebug("sendMessage", "envio de mensagem");
+			error = -1;
+			break;
+		}
+		bytesLeft -= bytesWritten;
+		ptr += bytesWritten;
+	}
+
+	if(error == 0) {
 		putok("mensagem enviada para fd %d: %s", fd, message);
-		error = 0;
 	}
 
 	return error;

@@ -1,0 +1,1295 @@
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 1
+
+OK: comando join com pesquisa: join 0 1
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 2
+
+OK: comando join com pesquisa: join 0 2
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem enviada para fd 5: ID 2
+
+OK: mensagem recebida pela ligacao 5: ID 2
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 1 10.3.1.111 5001
+
+OK: terminei ligacao com o nó 5
+OK: terminei ligacao 5
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 5: NEW 2 10.3.1.111 5002
+
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+OK: comando de utilizador processado com sucesso
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem recebida pela ligacao 5: NEW 2 10.3.1.111 5002
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: mensagem de NEW
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: ligação 6 estabelecida com: 10.3.1.111 5002
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 6: CON 2 10.3.1.111 5002
+
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem recebida pela ligacao 6: CON 2 10.3.1.111 5002
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 5
+
+OK: comando join com pesquisa: join 0 5
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+OK: mensagem enviada para fd 5: ID 5
+
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: mensagem recebida pela ligacao 7: ID 5
+OK: mensagem ID
+OK: mensagem enviada para fd 7: SUCC 1 10.3.1.111 5001
+
+OK: terminei ligacao com o nó 7
+OK: terminei ligacao 5
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 5: NEW 5 10.3.1.111 5005
+
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+OK: comando de utilizador processado com sucesso
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+OK: mensagem recebida pela ligacao 7: NEW 5 10.3.1.111 5005
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem de NEW
+OK: mensagem enviada para fd 5: CON 5 10.3.1.111 5005
+
+OK: mensagem recebida pela ligacao 5: CON 5 10.3.1.111 5005
+OK: terminei ligacao 5
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: terminei ligacao com o succi actual 5
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 7
+OK: ligação 5 estabelecida com: 10.3.1.111 5005
+OK: ligação estabelecida com o novo succi 10.3.1.111 5005
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+OK: mensagem enviada para fd 5: NEW 2 10.3.1.111 5002
+
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+OK: mensagem recebida pela ligacao 6: NEW 2 10.3.1.111 5002
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+OK: mensagem de NEW
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 3
+
+OK: comando join com pesquisa: join 0 3
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+OK: mensagem enviada para fd 5: ID 3
+
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 7
+OK: mensagem recebida pela ligacao 5: ID 3
+OK: mensagem ID
+DEBUG: handleQRY: enviar QRY a succi (2, 10.3.1.111, 5002, 6)
+OK: mensagem enviada para fd 6: QRY 1 3
+
+OK: mensagem recebida pela ligacao 6: QRY 1 3
+OK: mensagem QRY
+DEBUG: handleQRY: enviar QRY a succi (5, 10.3.1.111, 5005, 5)
+OK: mensagem enviada para fd 5: QRY 1 3
+
+OK: mensagem recebida pela ligacao 6: QRY 1 3
+OK: mensagem QRY
+OK: sou o nó responsável por 3: 5 10.3.1.111 5005
+
+OK: mensagem enviada para fd 6: RSP 1 3 5 10.3.1.111 5005
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+OK: mensagem enviada para fd 6: RSP 1 3 5 10.3.1.111 5005
+
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+OK: mensagem retransmitida
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+OK: mensagem enviada para fd 5: SUCC 5 10.3.1.111 5005
+
+OK: terminei ligacao 5
+OK: terminei ligacao com o nó 5
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: ligação 5 estabelecida com: 10.3.1.111 5005
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 7
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5003
+
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: mensagem recebida pela ligacao 7: NEW 3 10.3.1.111 5003
+OK: mensagem de NEW
+OK: mensagem enviada para fd 6: CON 3 10.3.1.111 5003
+
+OK: mensagem recebida pela ligacao 5: CON 3 10.3.1.111 5003
+OK: terminei ligacao 6
+OK: mensagem de CON
+OK: terminei ligacao com o succi actual 5
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 7
+OK: ligação 5 estabelecida com: 10.3.1.111 5003
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: ligação estabelecida com o novo succi 10.3.1.111 5003
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+OK: mensagem enviada para fd 5: NEW 2 10.3.1.111 5002
+
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: mensagem recebida pela ligacao 6: NEW 2 10.3.1.111 5002
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+OK: mensagem de NEW
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 6
+
+OK: comando join com pesquisa: join 0 6
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 7
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+OK: mensagem enviada para fd 5: ID 6
+
+OK: mensagem recebida pela ligacao 5: ID 6
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 1 10.3.1.111 5001
+
+OK: terminei ligacao 5
+OK: terminei ligacao com o nó 5
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 7
+OK: mensagem enviada para fd 5: NEW 6 10.3.1.111 5006
+
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 7
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem recebida pela ligacao 5: NEW 6 10.3.1.111 5006
+OK: mensagem de NEW
+OK: mensagem enviada para fd 7: CON 6 10.3.1.111 5006
+
+OK: mensagem recebida pela ligacao 5: CON 6 10.3.1.111 5006
+OK: terminei ligacao 7
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+OK: terminei ligacao com o succi actual 5
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: ligação 5 estabelecida com: 10.3.1.111 5006
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: ligação estabelecida com o novo succi 10.3.1.111 5006
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+OK: mensagem enviada para fd 5: NEW 5 10.3.1.111 5005
+
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+OK: mensagem recebida pela ligacao 6: NEW 5 10.3.1.111 5005
+OK: mensagem de NEW
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 7
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 4
+
+OK: comando join com pesquisa: join 0 4
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+OK: mensagem enviada para fd 5: ID 4
+
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: mensagem recebida pela ligacao 7: ID 4
+OK: mensagem ID
+DEBUG: handleQRY: enviar QRY a succi (2, 10.3.1.111, 5002, 6)
+OK: mensagem enviada para fd 6: QRY 1 4
+
+OK: mensagem recebida pela ligacao 6: QRY 1 4
+OK: mensagem QRY
+DEBUG: handleQRY: enviar QRY a succi (3, 10.3.1.111, 5003, 5)
+OK: mensagem enviada para fd 5: QRY 1 4
+
+OK: mensagem recebida pela ligacao 6: QRY 1 4
+OK: mensagem QRY
+DEBUG: handleQRY: enviar QRY a succi (5, 10.3.1.111, 5005, 5)
+OK: mensagem enviada para fd 5: QRY 1 4
+
+OK: mensagem recebida pela ligacao 7: QRY 1 4
+OK: mensagem QRY
+OK: sou o nó responsável por 4: 5 10.3.1.111 5005
+
+OK: mensagem enviada para fd 7: RSP 1 4 5 10.3.1.111 5005
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+OK: mensagem enviada para fd 6: RSP 1 4 5 10.3.1.111 5005
+
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: mensagem retransmitida
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 7
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: mensagem enviada para fd 6: RSP 1 4 5 10.3.1.111 5005
+
+OK: mensagem retransmitida
+OK: mensagem enviada para fd 7: SUCC 5 10.3.1.111 5005
+
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: terminei ligacao com o nó 7
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: terminei ligacao 5
+OK: ligação 5 estabelecida com: 10.3.1.111 5005
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+OK: mensagem enviada para fd 5: NEW 4 10.3.1.111 5004
+
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: comando de utilizador processado com sucesso
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 7
+DEBUG: main: CurNode - ring: 0 id: 4 ip: 10.3.1.111 port: 5004 fd: 3
+OK: mensagem recebida pela ligacao 6: NEW 4 10.3.1.111 5004
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+OK: mensagem de NEW
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem enviada para fd 7: CON 4 10.3.1.111 5004
+
+OK: terminei ligacao 7
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 5: CON 4 10.3.1.111 5004
+OK: mensagem de CON
+OK: terminei ligacao com o succi actual 5
+OK: ligação 5 estabelecida com: 10.3.1.111 5004
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: ligação estabelecida com o novo succi 10.3.1.111 5004
+DEBUG: main: CurNode - ring: 0 id: 4 ip: 10.3.1.111 port: 5004 fd: 3
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5003
+
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: SucciNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 5
+OK: mensagem recebida pela ligacao 6: NEW 3 10.3.1.111 5003
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: mensagem de NEW
+DEBUG: main: CurNode - ring: 0 id: 4 ip: 10.3.1.111 port: 5004 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 4 ip: 10.3.1.111 port: 5004 fd: 3
+DEBUG: main: SucciNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 5 ip: 10.3.1.111 port: 5005 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: mensagem recebida pela ligacao 7: QRY 10 10
+OK: mensagem QRY
+DEBUG: handleMessage: QRY feito sem ser pelo predi
+OK: mensagem enviada para fd 7: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 7: RSP 10 10 10 10 10
+DEBUG: handleMessage: mensagem inválida
+OK: mensagem enviada para fd 7: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 7: RSP 10 10 10 10 10 10
+DEBUG: handleMessage: mensagem inválida
+OK: mensagem enviada para fd 7: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 7: RSP 10 10 10 10
+DEBUG: handleMessage: mensagem inválida
+OK: mensagem enviada para fd 7: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 7: ID 5
+OK: mensagem ID
+OK: mensagem enviada para fd 7: SUCC 5 10.3.1.111 5005
+
+OK: terminei ligacao com o nó 7
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 7: boot
+DEBUG: handleMessage: mensagem inválida
+OK: mensagem enviada para fd 7: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+OK: mensagem recebida pela ligacao 7: BOOT
+DEBUG: handleMessage: BOOT feito sem ser pelo predi
+OK: mensagem enviada para fd 7: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: LEAVE
+
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: LEAVE
+
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: 0 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: terminei ligacao com succi 5
+OK: mensagem enviada para fd 6: CON 6 10.3.1.111 5006
+
+OK: mensagem recebida pela ligacao 5: CON 6 10.3.1.111 5006
+OK: terminei ligacao com predi 6
+OK: ligacao 6 terminada
+OK: mensagem de CON
+OK: ligação terminada com predi
+OK: terminei ligacao com o succi actual 5
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: CurNode - ring: -1 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5005 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5005 fd: -1
+OK: ligação 5 estabelecida com: 10.3.1.111 5006
+OK: ligação estabelecida com o novo succi 10.3.1.111 5006
+OK: mensagem enviada para fd 5: NEW 4 10.3.1.111 5004
+
+OK: mensagem recebida pela ligacao 6: NEW 4 10.3.1.111 5004
+DEBUG: main: CurNode - ring: 0 id: 4 ip: 10.3.1.111 port: 5004 fd: 3
+OK: mensagem de NEW
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave asda
+
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: -1 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: -1 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: -1 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: -1 id: 5 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: mensagem enviada para fd 6: BOOT
+
+OK: mensagem recebida pela ligacao 6: BOOT
+OK: terminei ligacao com succi 6
+OK: mensagem BOOT
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 6
+OK: mensagem enviada para fd 5: CON 2 10.3.1.111 5002
+
+OK: terminei ligacao com predi 5
+OK: ligacao 6 terminada
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: comando de utilizador processado com sucesso
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5001 fd: -1
+DEBUG: main: CurNode - ring: -1 id: 2 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+OK: mensagem recebida pela ligacao 5: CON 2 10.3.1.111 5002
+OK: mensagem de CON
+OK: terminei ligacao com o succi actual 5
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: ligação estabelecida com o novo succi 10.3.1.111 5002
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5001 fd: -1
+OK: mensagem enviada para fd 5: NEW 6 10.3.1.111 5006
+
+OK: mensagem recebida pela ligacao 6: NEW 6 10.3.1.111 5006
+OK: mensagem de NEW
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: mensagem enviada para fd 5: BOOT
+
+OK: mensagem recebida pela ligacao 6: BOOT
+OK: terminei ligacao com succi 5
+OK: mensagem BOOT
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 5
+OK: mensagem enviada para fd 6: CON 3 10.3.1.111 5003
+
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: terminei ligacao com predi 6
+OK: comando de utilizador processado com sucesso
+OK: ligacao 6 terminada
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: -1 id: 3 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: SucciNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+OK: mensagem recebida pela ligacao 5: CON 3 10.3.1.111 5003
+OK: mensagem de CON
+OK: terminei ligacao com o succi actual 5
+OK: ligação 5 estabelecida com: 10.3.1.111 5003
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: ligação estabelecida com o novo succi 10.3.1.111 5003
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 5
+OK: mensagem enviada para fd 5: NEW 6 10.3.1.111 5006
+
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+OK: mensagem recebida pela ligacao 6: NEW 6 10.3.1.111 5006
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: mensagem de NEW
+DEBUG: main: PrediNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 4 ip: 10.3.1.111 port: 5004 fd: 5
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: terminei ligacao com succi 5
+OK: mensagem enviada para fd 6: CON 6 10.3.1.111 5006
+
+OK: mensagem recebida pela ligacao 5: CON 6 10.3.1.111 5006
+OK: terminei ligacao com predi 6
+OK: ligacao 6 terminada
+OK: mensagem de CON
+OK: ligação terminada com predi
+OK: comando de utilizador processado com sucesso
+OK: terminei ligacao com o succi actual 5
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: CurNode - ring: -1 id: 4 ip: 10.3.1.111 port: 5004 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5004 fd: -1
+OK: ligação 5 estabelecida com: 10.3.1.111 5006
+OK: ligação estabelecida com o novo succi 10.3.1.111 5006
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5003
+
+OK: mensagem recebida pela ligacao 6: NEW 3 10.3.1.111 5003
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+OK: mensagem de NEW
+DEBUG: main: CurNode - ring: 0 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: terminei ligacao com succi 5
+OK: mensagem enviada para fd 6: CON 3 10.3.1.111 5003
+
+OK: terminei ligacao com predi 6
+OK: comando de utilizador processado com sucesso
+OK: ligacao 6 terminada
+DEBUG: main: CurNode - ring: -1 id: 6 ip: 10.3.1.111 port: 5006 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+OK: ligação terminada com predi
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+OK: mensagem recebida pela ligacao 5: CON 3 10.3.1.111 5003
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+DEBUG: main: PrediNode - id: 6 ip: 10.3.1.111 port: 5006 fd: 5
+OK: ligacao 5 terminada
+OK: ligação terminada com succi
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: -1 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: -1 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 3
+
+OK: comando join com pesquisa: join 0 3
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 2
+
+OK: comando join com pesquisa: join 0 2
+OK: ligação 5 estabelecida com: 10.3.1.111 5003
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 5: ID 2
+
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+OK: mensagem recebida pela ligacao 5: ID 2
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 3 10.3.1.111 5003
+
+OK: terminei ligacao com o nó 5
+OK: terminei ligacao 5
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+OK: ligação 5 estabelecida com: 10.3.1.111 5003
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 5: NEW 2 10.3.1.111 5002
+
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+OK: comando de utilizador processado com sucesso
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+OK: mensagem recebida pela ligacao 5: NEW 2 10.3.1.111 5002
+OK: mensagem de NEW
+OK: ligação 6 estabelecida com: 10.3.1.111 5002
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 6: CON 2 10.3.1.111 5002
+
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: mensagem recebida pela ligacao 6: CON 2 10.3.1.111 5002
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: mensagem enviada para fd 6: BOOT
+
+OK: mensagem recebida pela ligacao 6: BOOT
+OK: terminei ligacao com succi 6
+OK: mensagem BOOT
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: mensagem enviada para fd 5: CON 2 10.3.1.111 5002
+
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: terminei ligacao com predi 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+OK: mensagem recebida pela ligacao 5: CON 2 10.3.1.111 5002
+OK: comando de utilizador processado com sucesso
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: -1 id: 2 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+OK: ligacao 6 terminada
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: ligacao 5 terminada
+OK: ligação terminada com succi
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: -1 id: 2 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 1
+
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 2
+
+OK: comando join com pesquisa: join 0 2
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+OK: mensagem enviada para fd 5: ID 2
+
+OK: mensagem recebida pela ligacao 5: ID 2
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 2 10.3.1.111 5002
+
+OK: terminei ligacao 5
+OK: terminei ligacao com o nó 5
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: executeUserCommand: join falhou
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: CurNode - ring: -1 id: 2 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 3
+
+OK: comando join com pesquisa: join 0 3
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: mensagem enviada para fd 5: ID 3
+
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+OK: mensagem recebida pela ligacao 5: ID 3
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 2 10.3.1.111 5002
+
+OK: terminei ligacao 5
+OK: terminei ligacao com o nó 5
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5003
+
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5003 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+OK: mensagem recebida pela ligacao 5: NEW 3 10.3.1.111 5003
+OK: mensagem de NEW
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+OK: ligação 6 estabelecida com: 10.3.1.111 5003
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: mensagem enviada para fd 6: CON 3 10.3.1.111 5003
+
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: mensagem recebida pela ligacao 6: CON 3 10.3.1.111 5003
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+OK: mensagem de CON
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 2
+
+OK: comando join com pesquisa: join 0 2
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: mensagem enviada para fd 5: ID 2
+
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: mensagem recebida pela ligacao 7: ID 2
+OK: mensagem ID
+OK: mensagem enviada para fd 7: SUCC 2 10.3.1.111 5002
+
+OK: terminei ligacao com o nó 7
+OK: terminei ligacao 5
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: executeUserCommand: join falhou
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: -1 id: 2 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 3
+
+OK: comando join com pesquisa: join 0 3
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 5: ID 3
+
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: mensagem recebida pela ligacao 7: ID 3
+OK: mensagem ID
+DEBUG: handleQRY: enviar QRY a succi (3, 10.3.1.111, 5003, 6)
+OK: mensagem enviada para fd 6: QRY 2 3
+
+OK: mensagem recebida pela ligacao 6: QRY 2 3
+OK: mensagem QRY
+OK: sou o nó responsável por 3: 3 10.3.1.111 5003
+
+OK: mensagem enviada para fd 6: RSP 2 3 3 10.3.1.111 5003
+
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: mensagem enviada para fd 7: SUCC 3 10.3.1.111 5003
+
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+OK: terminei ligacao com o nó 7
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: terminei ligacao 5
+DEBUG: executeUserCommand: join falhou
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: -1 id: 2 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 0 1
+
+OK: comando join com pesquisa: join 0 1
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: mensagem enviada para fd 5: ID 1
+
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: mensagem recebida pela ligacao 7: ID 1
+OK: mensagem ID
+OK: mensagem enviada para fd 7: SUCC 2 10.3.1.111 5002
+
+OK: terminei ligacao 5
+OK: terminei ligacao com o nó 7
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+OK: mensagem enviada para fd 5: NEW 1 10.3.1.111 5001
+
+DEBUG: main: nova ligação 7 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: comando de utilizador processado com sucesso
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: mensagem recebida pela ligacao 7: NEW 1 10.3.1.111 5001
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+OK: mensagem de NEW
+OK: mensagem enviada para fd 5: CON 1 10.3.1.111 5001
+
+OK: mensagem recebida pela ligacao 5: CON 1 10.3.1.111 5001
+OK: terminei ligacao 5
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+OK: terminei ligacao com o succi actual 5
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 7
+OK: ligação 5 estabelecida com: 10.3.1.111 5001
+OK: ligação estabelecida com o novo succi 10.3.1.111 5001
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5003
+
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5006 fd: -1
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+OK: mensagem recebida pela ligacao 6: NEW 3 10.3.1.111 5003
+DEBUG: main: SucciNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 5
+OK: mensagem de NEW
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 1 ip: 10.3.1.111 port: 5001 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+OK: mensagem enviada para fd 5: BOOT
+
+OK: terminei ligacao com succi 5
+OK: mensagem enviada para fd 6: CON 2 10.3.1.111 5002
+
+OK: terminei ligacao com predi 6
+OK: mensagem recebida pela ligacao 5: CON 2 10.3.1.111 5002
+OK: mensagem recebida pela ligacao 7: BOOT
+OK: mensagem de CON
+OK: terminei ligacao com o succi actual 5
+OK: mensagem BOOT
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 1 ip: 10.3.1.111 port: 5001 fd: 7
+OK: ligacao 7 terminada
+OK: ligação terminada com predi
+OK: ligação 5 estabelecida com: 10.3.1.111 5002
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+OK: ligação estabelecida com o novo succi 10.3.1.111 5002
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5001 fd: -1
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5003
+
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5001 fd: -1
+OK: mensagem recebida pela ligacao 5: NEW 3 10.3.1.111 5003
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: mensagem de NEW
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 6
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 2 ip: 10.3.1.111 port: 5002 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5003 fd: 5
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+OK: mensagem enviada para fd 6: BOOT
+
+OK: terminei ligacao com succi 6
+OK: mensagem enviada para fd 5: CON 3 10.3.1.111 5003
+
+OK: terminei ligacao com predi 5
+OK: mensagem recebida pela ligacao 5: CON 3 10.3.1.111 5003
+OK: mensagem de CON
+OK: mensagem recebida pela ligacao 6: BOOT
+DEBUG: handleMessage: BOOT feito sem ser pelo predi
+OK: mensagem enviada para fd 6: ERROR
+
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+DEBUG: main: PrediNode - id: 2 ip: 10.3.1.111 port: 5002 fd: 5
+OK: ligacao 5 terminada
+OK: ligação terminada com succi
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: show
+
+OK: comando show
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 0 id: 3 ip: 10.3.1.111 port: 5003 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5002 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+OK: argumentos de entrada lidos com sucesso
+OK: socket de escuta criado
+OK: socket de so servidor de arranque criado
+OK: inicialização completa
+
+DEBUG: main: CurNode - ring: -1 id: -1 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 25 0
+
+OK: comando join com pesquisa: join 25 0
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 25 id: 0 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: leave
+
+OK: comando leave
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: -1 id: 0 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 25 10
+
+OK: comando join com pesquisa: join 25 10
+OK: comando de utilizador processado com sucesso
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: argumentos de entrada lidos com sucesso
+OK: socket de escuta criado
+OK: socket de so servidor de arranque criado
+OK: inicialização completa
+
+DEBUG: main: CurNode - ring: -1 id: -1 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 25 10
+
+OK: comando join com pesquisa: join 25 10
+OK: ligação 5 estabelecida com: 10.3.1.111 5000
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+OK: mensagem enviada para fd 5: ID 10
+
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: mensagem recebida pela ligacao 5: ID 10
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 10 10.3.1.111 5000
+
+OK: terminei ligacao com o nó 5
+OK: terminei ligacao 5
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: executeUserCommand: join falhou
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: falha no processamento do comando de utilizador
+DEBUG: main: CurNode - ring: -1 id: -1 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: join 25 3
+
+OK: comando join com pesquisa: join 25 3
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: ligação 5 estabelecida com: 10.3.1.111 5000
+OK: mensagem enviada para fd 5: ID 3
+
+OK: mensagem recebida pela ligacao 5: ID 3
+OK: mensagem ID
+OK: mensagem enviada para fd 5: SUCC 10 10.3.1.111 5000
+
+OK: terminei ligacao com o nó 5
+OK: terminei ligacao 5
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: ligação 5 estabelecida com: 10.3.1.111 5000
+DEBUG: main: nova ligação 5 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+OK: mensagem enviada para fd 5: NEW 3 10.3.1.111 5005
+
+DEBUG: main: SucciNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: comando de utilizador processado com sucesso
+OK: mensagem recebida pela ligacao 5: NEW 3 10.3.1.111 5005
+DEBUG: main: CurNode - ring: 25 id: 3 ip: 10.3.1.111 port: 5005 fd: 3
+OK: mensagem de NEW
+DEBUG: main: SucciNode - id: 10 ip: 10.3.1.111 port: 5000 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+DEBUG: main: nova ligação 6 com endereço: 10.3.1.111
+DEBUG: main: CurNode - ring: 25 id: 3 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 10 ip: 10.3.1.111 port: 5000 fd: 5
+DEBUG: main: PrediNode - id: -1 ip:  port:  fd: -1
+OK: ligação 6 estabelecida com: 10.3.1.111 5005
+OK: mensagem enviada para fd 6: CON 3 10.3.1.111 5005
+
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5005 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5005 fd: 5
+OK: mensagem recebida pela ligacao 6: CON 3 10.3.1.111 5005
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 25 id: 3 ip: 10.3.1.111 port: 5005 fd: 3
+DEBUG: main: SucciNode - id: 10 ip: 10.3.1.111 port: 5000 fd: 5
+DEBUG: main: PrediNode - id: 10 ip: 10.3.1.111 port: 5000 fd: 6
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit
+OK: terminei ligacao com succi 5
+OK: mensagem enviada para fd 6: CON 10 10.3.1.111 5000
+
+OK: terminei ligacao com predi 6
+OK: ligacao 5 terminada
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5005 fd: 6
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5005 fd: -1
+OK: mensagem recebida pela ligacao 6: CON 10 10.3.1.111 5000
+OK: mensagem de CON
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: 3 ip: 10.3.1.111 port: 5005 fd: 6
+DEBUG: main: PrediNode - id: 3 ip: 10.3.1.111 port: 5005 fd: 6
+OK: ligacao 6 terminada
+OK: ligação terminada com succi
+OK: ligação terminada com predi
+DEBUG: main: CurNode - ring: 25 id: 10 ip: 10.3.1.111 port: 5000 fd: 3
+DEBUG: main: SucciNode - id: -1 ip: 10.3.1.111 port: 5005 fd: -1
+DEBUG: main: PrediNode - id: -1 ip: 10.3.1.111 port: 5005 fd: -1
+DEBUG: main: processar comando do utilizador
+DEBUG: input do utilizador: %s: exit
+
+OK: comando exit

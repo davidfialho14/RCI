@@ -124,7 +124,7 @@ int executeUserCommand(const char *input) {
 
 		//testar se o no ja esta registado
 		if(curRing == -1) {
-			putmessage("o anel não está registado em nenhum aneis\n");
+			putmessage("o nó não está registado em nenhum anel\n");
 			return -1;
 		}
 

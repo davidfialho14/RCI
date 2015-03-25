@@ -30,6 +30,12 @@ int handleMessage(const char* message, int fd) {
 	if(strcmp(command, "QRY") == 0 && argCount == 3) {	//QRY message
 		putok("mensagem QRY");
 
+		//verificar que foi o predi quem fez a pesquisa
+		if(fd != prediNode.fd) {
+			putdebug("handleMessage", "QRY feito sem ser pelo predi");
+			return -1;
+		}
+
 		int searcherId;
 		int searchedId;
 
@@ -132,6 +138,13 @@ int handleMessage(const char* message, int fd) {
 		error = handleID(nodeId, fd);
 
 	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {	//mensagem BOOT
+
+		//verificar que foi o predi quem enviou BOOT
+		if(fd != prediNode.fd) {
+			putdebug("handleMessage", "BOOT feito sem ser pelo predi");
+			return -1;
+		}
+
 		putok("mensagem BOOT");
 		iAmStartNode = TRUE;
 		error = 0;
