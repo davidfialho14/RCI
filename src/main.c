@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
 
 	//inicializacao
 	if(initializeCommunication(argc, argv) != 0) exit(-1); //inicailizacao falhou
-	putok("inicialização completa\n");
+	putdebug("inicialização completa\n");
 
 	//inicializar conjunto de ligacoes
 	initializeConnectionSet();
@@ -42,11 +42,11 @@ int main(int argc, char const *argv[]) {
 		//adicionar stdin ao conjunto de fds
 		FD_SET(STDIN_FILENO, &readFds);
 
-		putdebug("main", "CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
+		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
-		putdebug("main", "SucciNode - id: %d ip: %s port: %s fd: %d",
+		putdebug("SucciNode - id: %d ip: %s port: %s fd: %d",
 						succiNode.id, succiNode.ip, succiNode.port, succiNode.fd);
-		putdebug("main", "PrediNode - id: %d ip: %s port: %s fd: %d",
+		putdebug("PrediNode - id: %d ip: %s port: %s fd: %d",
 						prediNode.id, prediNode.ip, prediNode.port, prediNode.fd);
 
 		if(maxFd < getMaxConnection()) {
@@ -57,7 +57,7 @@ int main(int argc, char const *argv[]) {
 		putmessage("\r> ");
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
-			putdebug("main", "select falhou");
+			putdebugError("main", "select falhou");
 			continue;
 		}
 
@@ -69,9 +69,9 @@ int main(int argc, char const *argv[]) {
 			//aceitar ligacao
 			int connectionFd;
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
-				putdebug("main", "ligação não foi aceite");
+				putdebugError("main", "ligação não foi aceite");
 			} else {
-				putdebug("main", "nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
+				putdebugError("main", "nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
 			}
@@ -83,12 +83,12 @@ int main(int argc, char const *argv[]) {
 			bzero(buffer, sizeof(buffer));
 			if(fgets(buffer, BUFSIZE, stdin) != NULL) {
 				//executar comando do utilizador
-				putdebug("main", "processar comando do utilizador");
+				putdebugError("main", "processar comando do utilizador");
 
 				int errorCode = executeUserCommand(buffer);
 				switch(errorCode) {
-					case 0: 	putok("comando de utilizador processado com sucesso"); break;
-					case -1: 	putdebug("main", "falha no processamento do comando de utilizador"); break;
+					case 0: 	putdebug("comando de utilizador processado com sucesso"); break;
+					case -1: 	putdebugError("main", "falha no processamento do comando de utilizador"); break;
 					case 1:
 					{
 						putmessage("programa vai sair\n");
@@ -123,23 +123,23 @@ int main(int argc, char const *argv[]) {
 				if(readMessage(connectionFd, buffer, sizeof(buffer)) <= 0) {
 					close(connectionFd);		//fechar ligacao
 					rmConnection(connectionFd);	//remover no do conjunto de ligacoes
-					putok("ligacao %d terminada", connectionFd);
+					putdebug("ligacao %d terminada", connectionFd);
 
 					if(connectionFd == succiNode.fd) {
 						succiNode.fd = -1;
 						succiNode.id = -1;
-						putok("ligação terminada com succi");
+						putdebug("ligação terminada com succi");
 					}
 
 					if(connectionFd == prediNode.fd) {
 						prediNode.fd = -1;
 						prediNode.id = -1;
-						putok("ligação terminada com predi");
+						putdebug("ligação terminada com predi");
 					}
 
 				} else {
 					//tratar mensagem recebida
-					putok("mensagem recebida pela ligacao %d: %s", connectionFd, buffer);
+					putdebug("mensagem recebida pela ligacao %d: %s", connectionFd, buffer);
 
 					//remover \n
 					int length = strlen(buffer);

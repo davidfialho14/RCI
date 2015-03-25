@@ -32,16 +32,11 @@ void putdebug(const char *format, ...) {
 
 		fprintf(stdout, "DEBUG: ");
 		vfprintf(stdout, format, argp);
-		if(errno != 0) {
-			fprintf(stdout, ": %s", strerror(errno));
-		}
 		fprintf(stdout, "\n");
 
 		va_end(argp);
-		closeLogFile();
 	}
 }
-
 
 void puterror(const char *format, ...) {
 
@@ -53,7 +48,6 @@ void puterror(const char *format, ...) {
 	if(errno != 0) {
 		fprintf(stderr, ": %s", strerror(errno));
 	}
-	fprintf(stderr, "\n");
 	fflush(stderr);
 
 	va_end(argp);

@@ -29,12 +29,17 @@ int executeUserCommand(const char *input) {
 	int argCount = sscanf(input, "%s %s %s %s %s %s %s",
 												command, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
 
+	if(argCount == -1) {
+		//o utilizador apenas carregou no enter - ignorar
+		return -1;
+	}
+
 	if(strcmp(command, "join") == 0) { 			//comando join?
 		//comando join lido
 
 		//testar se o nó já pertence a um anel
 		if(curRing != -1) {
-			putmessage("o nó já está registado no anel %d\n", curRing);
+			puterror("o nó já está registado no anel %d\n", curRing);
 			return -1;
 		}
 
@@ -43,70 +48,71 @@ int executeUserCommand(const char *input) {
 
 		if(stringToUInt(arg[0], (unsigned int*) &ring) == -1 ||
 		stringToUInt(arg[1], (unsigned int*) &nodeId) == -1) {
-			putmessage("comando join inválido: argumentos inválidos\n");
+			puterror("comando join inválido: argumentos inválidos\n");
 			return -1;	//retornar erro
 		}
 
 		//testar o valor do identificador pretendido
 		if(nodeId > MAXID) {
-			putmessage("o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			puterror("o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 			return -1;
 		}
 
 		//podemos receber mais 2 argumentos ou mais 5 argumentos
 		if(argCount == 3) {
 			//tratar join com pesquisa
-			putok("comando join com pesquisa: %s %d %d", command, ring, nodeId);
+			putdebug("comando join com pesquisa: %s %d %d", command, ring, nodeId);
 
 			if( (error = join(ring, nodeId, -1, NULL, NULL)) == -1) {
-				putdebug("executeUserCommand", "join falhou");
+				putdebugError("executeUserCommand", "join falhou");
 			}
 
 		} else if(argCount == 6) {
 			//tratar join sem pesquisa
 			int succiId	= -1;
 			if(stringToUInt(arg[2], (unsigned int*) &succiId) == -1) {
-				putmessage("comando join inválido: argumentos inválidos\n");
+				puterror("comando join inválido: argumentos inválidos\n");
 				return -1;
 			}
 
 			char *succiAddress = arg[3];
 			char *succiPort = arg[4];
 
-			putok("comando join sem pesquisa: %s %d %d %d %s %s", command, ring, nodeId,
+			putdebug("comando join sem pesquisa: %s %d %d %d %s %s", command, ring, nodeId,
 					succiId, succiAddress, succiPort);
 
 			if( (error = join(ring, nodeId, succiId, succiAddress, succiPort)) == -1) {
-				putdebug("executeUserCommand", "debug join falhou");
+				putdebugError("executeUserCommand", "debug join falhou");
 			}
 
 		} else {
-			putmessage("comando join inválido: argumentos inválidos\n");
+			puterror("comando join inválido: argumentos inválidos\n");
 		}
 
 	} else if(strcmp(command, "show") == 0 && argCount == 1) {	//comando show?
 		//o comando show nao tem argumentos
 		//tratar comando
-		putok("comando show");
+		putdebug("comando show");
 
 		if(curRing == -1) {
 			putmessage("nó não pertence a nenhum anel\n");
-		} else {
-			putmessage("Anel: %d\n", curRing);
-			putmessage("Id: %d\n", curNode.id);
 
-			putmessage("Succi Id: ");
+		} else {
+			printf("Anel: %d\n", curRing);
+			printf("Id: %d\n", curNode.id);
+
+			printf("Succi Id: ");
 			if(succiNode.fd == -1) {
-					putmessage("não definido\n");
+				printf("não definido\n");
 			} else {
-				putmessage("%d\n", succiNode.id);
+				printf("%d\n", succiNode.id);
 			}
 
-			putmessage("Predi Id: ");
-			if(succiNode.fd == -1) {
-					putmessage("não definido\n");
+			printf("Predi Id: ");
+			if(prediNode.fd == -1) {
+				printf("não definido\n");
 			} else {
-				putmessage("%d\n", prediNode.id);
+				printf("%d\n", prediNode.id);
 			}
 		}
 
@@ -118,19 +124,19 @@ int executeUserCommand(const char *input) {
 
 		int searchedId	= -1;
 		if(stringToUInt(arg[0], (unsigned int*) &searchedId) == -1) {
-			putmessage("comando search inválido: argumentos inválidos\n");
+			puterror("comando search inválido: argumentos inválidos\n");
 			return -1;
 		}
 
 		//testar se o no ja esta registado
 		if(curRing == -1) {
-			putmessage("o nó não está registado em nenhum anel\n");
+			puterror("o nó não está registado em nenhum anel\n");
 			return -1;
 		}
 
 		//testar o valor do identificador pretendido
 		if(searchedId > MAXID) {
-			putmessage("o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			puterror("o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
 			return -1;
 		}
 
@@ -140,24 +146,24 @@ int executeUserCommand(const char *input) {
 		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
 			//nó é responsavel pelo id procurado
 			//responder com o próprio IP e porto
-			putmessage("nó responsavel por %d:\n", searchedId);
-			putmessage("\tid: %d ip: %s porto: %s\n", curNode.id, curNode.ip, curNode.port);
+			printf("nó responsavel por %d:\n", searchedId);
+			printf("\tid: %d ip: %s porto: %s\n", curNode.id, curNode.ip, curNode.port);
 			error = 0;	//nao ocorreu nenhum erro
 		} else {
 			int ownerId;
 			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
 
 			if( (error = handleQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
-				putdebug("executeUserCommand", "pesquisa pelo id %d falhou", searchedId);
+				putdebugError("executeUserCommand", "pesquisa pelo id %d falhou", searchedId);
 			} else if(error == 1) {
 				//o nó actual foi quem iniciou a procura
-				putmessage("nó responsavel por %d:\n", searchedId);
-				putmessage("\tid: %d ip: %s porto: %s\n", ownerId, ownerIp, ownerPort);
+				printf("nó responsavel por %d:\n", searchedId);
+				printf("\tid: %d ip: %s porto: %s\n", ownerId, ownerIp, ownerPort);
 				error = 0;
 			} else {
 				//mensagem retransmitida
 				//isto nao é suposto acontecer aqui
-				putdebug("executeUserCommand", "mensagem não devia ter sido retransmitida");
+				putdebugError("executeUserCommand", "mensagem não devia ter sido retransmitida");
 				error = -1;
 			}
 		}
@@ -165,11 +171,11 @@ int executeUserCommand(const char *input) {
 	} else if(strcmp(command, "leave") == 0 && argCount == 1) {	//comando leave?
 		//o comando leave nao tem argumentos
 		//tratar comando
-		putok("comando leave");
+		putdebug("comando leave");
 
 		//testar se o nó está registado num anel
 		if(curRing == -1) {
-			putmessage("nó não se encontra registado em nenhum anel\n");
+			puterror("nó não se encontra registado em nenhum anel\n");
 			return -1;
 		}
 
@@ -181,7 +187,7 @@ int executeUserCommand(const char *input) {
 
 	} else if(strcmp(command, "exit") == 0 && argCount == 1) {	//comando exit?
 		//o comando exit nao tem argumentos
-		putok("comando exit");
+		putdebug("comando exit");
 
 		//sair de forma limpa
 		if(curRing != -1) {
@@ -191,7 +197,7 @@ int executeUserCommand(const char *input) {
 		error = 1;	//indica que se pretende sair do programa
 
 	} else {
-		putmessage("comando inválido\n");
+		puterror("comando inválido\n");
 		error = -1;
 	}
 
@@ -225,7 +231,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 		//registar nó como nó de arranque do anel
 		iAmStartNode = TRUE;
 		if(registerAsStartingNode(ring, &node) == -1) {
-			putdebug("executeDebugJoin", "registo como nó de arranque falhou");
+			putdebugError("join", "registo como nó de arranque falhou");
 		} else {
 			putmessage("registado no anel %d com id %d\n", ring, nodeId);
 			//actualizar informacoes do nó tendo em conta que é o unico nó no anel
@@ -243,50 +249,53 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 
 			//estabelecer uma ligacao com o nó de arranque
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
-				putdebug("executeJoin", "ligacao com nó de arranque falhou");
+				putdebugError("join", "ligacao com nó de arranque falhou");
 				puterror("ligação ao nó de arranque do anel falhou");
 			} else {
 
 				//pedir ao nó de arranque as informacoes do seu succi no anel
 				if( (error = sendMessageID(startNode.fd, nodeId)) == -1) {
-					putdebug("executeJoin", "pedido do endereço do succi ao nó de arranque falhou");
+					putdebugError("join", "pedido do endereço do succi ao nó de arranque falhou");
 					puterror("comunicação com o nó de arranque do anel falhou");
 				} else {
 
 					//esperar pela resposta do nó de arranque
 					Node succ;
 					if( (error = waitForSUCC(startNode.fd, &succ)) == -1) {
-						putdebug("executeJoin", "espera pela resposta do servidor de arranque");
+						putdebugError("join", "espera pela resposta do servidor de arranque");
 						puterror("comunicação com o nó de arranque do anel falhou");
 					} else {
 
 						//fechar ligacao com succi
-						putok("terminei ligacao %d", startNode.fd);
+						putdebug("terminei ligacao com succi %d", startNode.fd);
 						close(startNode.fd);
 						rmConnection(startNode.fd);
 						startNode.fd = -1;
 
 						//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
 						if(succ.id == nodeId) {
-							putmessage("o identificador %d já existe no anel, escolha outro por favor\n", nodeId);
+							puterror("o identificador %d já existe no anel, escolha outro por favor\n", nodeId);
 							error = -1;
 						} else {
 							//inserir nó no anel
-							error = insertNode(ring, nodeId, succ.id, succ.ip, succ.port);
+							if( (error = insertNode(ring, nodeId, succ.id, succ.ip, succ.port)) == -1) {
+								putdebugError("join", "insercao do nó falhou");
+							}
 						}
-
 					}
 				}
 			}
 
 		} else {
 			//inserir nó no anel com endereco dado
-			error = insertNode(ring, nodeId, succiId, succiAddress, succiPort);
+			if( (error = insertNode(ring, nodeId, succiId, succiAddress, succiPort)) == -1) {
+				putdebugError("join", "insercao do nó falhou");
+			}
 		}
 
 	} else {
 		puterror("comunicação com o servidor de arranque falhou");
-		putdebug("executeDebugJoin", "pedido de nó de arranque falhou");
+		putdebugError("join", "pedido de nó de arranque falhou");
 	}
 
 	return error;
@@ -304,33 +313,33 @@ int leave() {
 
 			//registar succi como no de arranque
 			if(registerAsStartingNode(curRing, &succiNode) == -1) {
-				putdebug("executeDebugJoin", "registo como nó de arranque falhou");
+				putdebugError("leave", "tentativa de registo no servidor de arranque falhou");
 				return -1;
 			}
 
 			//enviar BOOT a succi
 			if(sendMessageBOOT(succiNode.fd) == -1) {
-				putdebug("executeDebugJoin", "envio de mensagem de BOOT para o succi falhou");
+				putdebugError("leave", "envio de mensagem de BOOT para o succi falhou");
 				return -1;
 			}
 		}
 
 		//fechar ligacao com succi
-		putok("terminei ligacao com succi %d", succiNode.fd);
+		putdebug("terminei ligacao com succi %d", succiNode.fd);
 		close(succiNode.fd);
 		rmConnection(succiNode.fd);
 		succiNode.fd = -1;
 
 		//enviar informacoes do succi a predi
 		if( (error = sendMessageCON(succiNode.id, succiNode.ip, succiNode.port, prediNode.fd)) == -1) {
-			putdebug("leave", "mensagem de CON a predi");
+			putdebugError("leave", "mensagem de CON a predi falhou");
 			return -1;
 		}
 
 		//id so pode ser apagado depois das informacoes do succi serem enviadas a predi
 		succiNode.id = -1;
 
-		putok("terminei ligacao com predi %d", prediNode.fd);
+		putdebug("terminei ligacao com predi %d", prediNode.fd);
 		close(prediNode.fd);
 		rmConnection(prediNode.fd);
 		prediNode.fd = -1;
@@ -349,7 +358,8 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 	//ligar ao succi introduzido
 	int succiFd = -1;
 	if( (succiFd = connectToNode(succiAddress, succiPort)) == -1) {
-		putdebug("executeDebugJoin", "tentativa de ligação com succi (%s %s) falhou", succiAddress, succiPort);
+		putdebug("insertNode", "tentativa de ligação com succi (%s %s) falhou", succiAddress, succiPort);
+		puterror("não foi possivel ligar ao succi");
 	} else {
 		//adionar ligacao ao conjunto
 		addConnection(succiFd);
@@ -360,7 +370,7 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 
 		//enviar informacoes do proprio nó
 		if( (error = sendMessageNEW(succiFd)) == -1) {
-			putdebug("executeDebugJoin", "envio de mensagem NEW para %d %s falhou", succiId, succiPort);
+			putdebugError("insertNode", "envio de mensagem NEW para %d %s falhou", succiId, succiPort);
 		} else {
 
 			//definir succi introduzido como succi do nó

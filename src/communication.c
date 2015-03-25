@@ -37,22 +37,22 @@ int initializeCommunication(int argc, const char *argv[]) {
 	succiNode.id = succiNode.fd = -1;
 
 	if( (initialized = readInputArgs(argc, argv)) != 0) {
-		putdebug("initializeCommunication", "leitura dos argumentos de entrada");
+		putdebugError("initializeCommunication", "leitura dos argumentos de entrada");
 		return initialized;
 	}
-	putok("argumentos de entrada lidos com sucesso");	//debug
+	putdebug("argumentos de entrada lidos com sucesso");	//debug
 
 	if( (initialized = listenSocket()) != 0) {
 		puterror("listen socket falhou");
 		return initialized;
 	}
-	putok("socket de escuta criado");	//debug
+	putdebug("socket de escuta criado");	//debug
 
 	if( (initialized = startServerSocket()) != 0) {
 		puterror("socket do servidor de arranque falhou");
 		return initialized;
 	}
-	putok("socket de so servidor de arranque criado");	//debug
+	putdebug("socket de so servidor de arranque criado");	//debug
 
 	return initialized;
 }
@@ -379,7 +379,7 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 	struct addrinfo *servinfo;			//lista de enderecos
 	//obter enderecos do succi
 	if (getaddrinfo(nodeAddress, nodePort, &hints, &servinfo) != 0) {
-		putdebug("connectToNode", "endereço do nó é inválido");
+		putdebugError("connectToNode", "endereço do nó é inválido");
 	} else {
 		//iterar pelos varios enderecos ate conseguir criar um socket e fazer connect
 		struct addrinfo *aux = servinfo;
@@ -389,11 +389,11 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 				//criado um socket com sucesso
 				//ligar ao endereco
 				if(connect(nodeFd, aux->ai_addr,  aux->ai_addrlen) == -1) {
-					putdebug("connectToNode", "tentativa de ligação a um nó falhada");
+					putdebugError("connectToNode", "tentativa de ligação a um nó falhada");
 					close(nodeFd);	//fechar socket criado
 					nodeFd = -1;
 				} else {
-					putok("ligação %d estabelecida com: %s %s", nodeFd, nodeAddress, nodePort);
+					putdebug("ligação %d estabelecida com: %s %s", nodeFd, nodeAddress, nodePort);
 					break;	//sair apos ligacao ter sido estabelecida
 				}
 			}
@@ -401,7 +401,7 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 		}
 
 		if(aux == NULL) {
-			putdebug("connectToNode", "não foi possível ligar ao nó %s %s", nodeAddress, nodePort);
+			putdebugError("connectToNode", "não foi possível ligar ao nó %s %s", nodeAddress, nodePort);
 		}
 
 		//limpar recursos
@@ -435,7 +435,7 @@ int readMessage(int fd, char *message, size_t messageSize) {
 				strcat(message, buffer);
 			} else {
 				//mensagem total demasiado grande
-				putdebug("readMessage", "mensagem recebida excedeu limite de comprimento");
+				putdebugError("readMessage", "mensagem recebida excedeu limite de comprimento");
 				return -1;
 			}
 		}
@@ -449,6 +449,10 @@ int readMessage(int fd, char *message, size_t messageSize) {
 		totalBytesRead += bytesRead;
 	}
 
+	if(totalBytesRead > 0) {
+		putdebug("mensagem recebida de %d: %s", fd, message);
+	}
+
 	return totalBytesRead;
 }
 
@@ -460,7 +464,7 @@ int sendMessage(int fd, const char *message) {
 
 	while(bytesLeft > 0) {
 		if( (bytesWritten = write(fd, ptr, bytesLeft)) <= 0) {
-			putdebug("sendMessage", "envio de mensagem");
+			putdebugError("sendMessage", "envio de mensagem");
 			error = -1;
 			break;
 		}
@@ -469,7 +473,7 @@ int sendMessage(int fd, const char *message) {
 	}
 
 	if(error == 0) {
-		putok("mensagem enviada para fd %d: %s", fd, message);
+		putdebug("mensagem enviada para fd %d: %s", fd, message);
 	}
 
 	return error;
