@@ -21,6 +21,8 @@ int startServerFd = -1;
 struct sockaddr startServerAddress;
 int iAmStartNode = FALSE;
 
+extern int debug;
+
 /*****************
  * Inicialização *
  *****************/
@@ -37,6 +39,7 @@ int initializeCommunication(int argc, const char *argv[]) {
 	succiNode.id = succiNode.fd = -1;
 
 	if( (initialized = readInputArgs(argc, argv)) != 0) {
+		puterror("usage: ddt [-t ringport] [-i bootip] [-p bootport] [-debug]\n");
 		putdebugError("initializeCommunication", "leitura dos argumentos de entrada");
 		return initialized;
 	}
@@ -71,12 +74,11 @@ int readInputArgs(int argc, const char *argv[]) {
 	int inputMode = -1;		//indica o modo de entrada:
 							//	1-sem endereco do servidor de arranque
 							//	2-com endereco do servidor de arranque
-	if(argc == 3) {
+	if(argc == 3 || argc == 4) {
 		inputMode = 1;		//sem endereco do servidor de arranque
-	} else if(argc == 7) {
+	} else if(argc == 7 || argc == 8) {
 		inputMode = 2;		//com endereco do servidor de arranque
 	} else {
-		puterror("usage: ddt [-t ringport] [-i bootip] [-p bootport]");
 		return -1;
 	}
 
@@ -107,6 +109,9 @@ int readInputArgs(int argc, const char *argv[]) {
 				strcpy(startServerPort, argv[i]);
 				bootportDefined = TRUE;
 			}
+		} else if(strcmp(argv[i], "-debug") == 0) {
+			//definir para imprimir mensagens de debug
+			debug = TRUE;
 		}
 	}
 
@@ -115,9 +120,18 @@ int readInputArgs(int argc, const char *argv[]) {
 		//endereco e porto do servidor de arranque por defeito
 		strcpy(startServerIp, "tejo.tecnico.ulisboa.pt");
 		strcpy(startServerPort, "58000");
-		error = 0;
+
+		if(argc == 4 && !debug) {
+			error = -1;
+		} else {
+			error = 0;
+		}
 	} else if(inputMode == 2 && ringportDefined && bootIPDefined && bootportDefined) {
-		error = 0;
+		if(argc == 8 && !debug) {
+			error = -1;
+		} else {
+			error = 0;
+		}
 	}
 
 	if(error == 0) {
