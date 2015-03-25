@@ -40,6 +40,8 @@ extern int iAmStartNode;
 */
 int initializeCommunication(int argc, const char *argv[]);
 
+void closeSockets();
+
 /****************************************
  * Comunicacao com servidor de arranque *
  ****************************************/

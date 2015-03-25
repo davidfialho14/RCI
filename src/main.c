@@ -89,7 +89,25 @@ int main(int argc, char const *argv[]) {
 				switch(errorCode) {
 					case 0: 	putok("comando de utilizador processado com sucesso"); break;
 					case -1: 	putdebug("main", "falha no processamento do comando de utilizador"); break;
-					case 1:		putmessage("programa vai sair\n"); quit = TRUE; continue;
+					case 1:
+					{
+						putmessage("programa vai sair\n");
+
+						//fechar todos os sockets
+						int fd = getFirstConnection();
+						while(fd >= 0) {
+							close(fd);
+							rmConnection(fd);
+							//proxima ligacao
+							fd = getNextConnection(fd);
+						}
+
+						//fechar socket de escuta e socket do servidor de arranque
+						closeSockets();
+
+						quit = TRUE;
+						continue;
+					}
 				}
 			}
 		}

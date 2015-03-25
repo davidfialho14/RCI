@@ -226,6 +226,16 @@ int startServerSocket() {
 	return error;
 }
 
+/*
+ * TERMINAÇÃO
+ */
+void closeSockets() {
+	if(curNode.fd != -1)
+		close(curNode.fd);
+	if(startServerFd != -1)
+		close(startServerFd);
+}
+
 /****************************************
  * Comunicacao com servidor de arranque *
  ****************************************/
