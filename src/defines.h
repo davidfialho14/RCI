@@ -10,4 +10,7 @@
 
 #define INFINITE	65000
 
+#define ECONT		-2	//não foi possível estabelecer ligação com <endereco ip> <porto>
+
+
 #endif

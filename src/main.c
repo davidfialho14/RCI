@@ -54,6 +54,7 @@ int main(int argc, char const *argv[]) {
 		}
 
 		//esperar por descritor pronto para ler
+		putmessage("\r> ");
 		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
 			putdebug("main", "select falhou");
@@ -79,16 +80,17 @@ int main(int argc, char const *argv[]) {
 		if(FD_ISSET(STDIN_FILENO, &readFds)) { //testar se o utilizador executou um comando
 
 			//ler comando do utilizador
-			fgets(buffer, BUFSIZE, stdin);
+			bzero(buffer, sizeof(buffer));
+			if(fgets(buffer, BUFSIZE, stdin) != NULL) {
+				//executar comando do utilizador
+				putdebug("main", "processar comando do utilizador");
 
-			//executar comando do utilizador
-			putdebug("main", "processar comando do utilizador");
-
-			int errorCode = executeUserCommand(buffer);
-			switch(errorCode) {
-				case 0: 	putok("comando de utilizador processado com sucesso"); break;
-				case -1: 	putdebug("main", "falha no processamento do comando de utilizador"); break;
-				case 1:		putmessage("programa vai sair\n"); quit = TRUE; continue;
+				int errorCode = executeUserCommand(buffer);
+				switch(errorCode) {
+					case 0: 	putok("comando de utilizador processado com sucesso"); break;
+					case -1: 	putdebug("main", "falha no processamento do comando de utilizador"); break;
+					case 1:		putmessage("programa vai sair\n"); quit = TRUE; continue;
+				}
 			}
 		}
 

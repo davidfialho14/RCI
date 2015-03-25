@@ -41,6 +41,7 @@ void puterror(const char *format, ...) {
 		fprintf(stderr, ": %s", strerror(errno));
 	}
 	fprintf(stderr, "\n");
+	fflush(stderr);
 	va_end(argp);
 }
 
@@ -81,8 +82,8 @@ void putmessage(const char *format, ...) {
 	va_list argp;			//lista de argumentos
 	va_start(argp, format);
 
-	fprintf(stdout, "> ");
 	vfprintf(stdout, format, argp);
+	fflush(stdout);
 
 	va_end(argp);
 }
