@@ -302,6 +302,12 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			return -1;
 		}
 
+		if(nodeId == succiId) {
+			puterror("o nó e o seu succi não podem ter o mesmo identificador\n");
+			putmessage("altere um dos identificadores\n");
+			return -1;
+		}
+
 		//succ é definido com os valores recebidos
 		succ.id = succiId;
 		strcpy(succ.ip, succiAddress);
