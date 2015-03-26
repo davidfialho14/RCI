@@ -46,13 +46,13 @@ int initializeCommunication(int argc, const char *argv[]) {
 	putdebug("argumentos de entrada lidos com sucesso");	//debug
 
 	if( (initialized = listenSocket()) != 0) {
-		puterror("listen socket falhou");
+		puterror("listen socket falhou\n");
 		return initialized;
 	}
 	putdebug("socket de escuta criado");	//debug
 
 	if( (initialized = startServerSocket()) != 0) {
-		puterror("socket do servidor de arranque falhou");
+		puterror("socket do servidor de arranque falhou\n");
 		return initialized;
 	}
 	putdebug("socket de so servidor de arranque criado");	//debug

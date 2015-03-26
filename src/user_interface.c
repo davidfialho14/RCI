@@ -247,7 +247,8 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 				//definir anel do nó
 				curRing = ring;
 				putmessage("registado no anel %d com id %d\n", curRing, curNode.id);
-				error = 0;
+				//terminado o registo
+				return 0;
 			}
 
 		} else if(errorCode == 1) { 	//o anel nao esta vazio
@@ -295,6 +296,12 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 		//join sem pesquisa
 		putdebug("join sem pesquisa");
 
+		if(strcmp(curNode.ip, succiAddress) == 0 && strcmp(curNode.port, succiPort) == 0) {
+			puterror("endereço do nó correponde ao endereço do succi\n");
+			putmessage("por favor utilize outro endereço e/ou porto\n");
+			return -1;
+		}
+
 		//succ é definido com os valores recebidos
 		succ.id = succiId;
 		strcpy(succ.ip, succiAddress);
@@ -304,6 +311,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 	//inserir nó no anel com o succi obtido
 	if(insertNode(ring, nodeId, succ.id, succ.ip, succ.port) == -1) {
 		puterror("inserção no anel falhou\n");
+		return -1;
 	}
 
 	return error;
