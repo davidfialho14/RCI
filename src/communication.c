@@ -241,14 +241,12 @@ int startServerSocket() {
 
 				//definir intervalo de tempo
 				struct timeval tv;
-				tv.tv_sec = 5;
 				tv.tv_usec = 0;
-				if (setsockopt(startServerFd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
-				    putdebugError("startServerSocket", "não foi possivel definir timeout de socket UDP");
-				    error = -1;
-				} else {
-					error = 0;
-				}
+				tv.tv_sec = 25;		//timeout para o recv
+				setsockopt(startServerFd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv));
+				tv.tv_sec = 5;		//timeout para o send
+				setsockopt(startServerFd, SOL_SOCKET, SO_SNDTIMEO,&tv,sizeof(tv));
+				error = 0;
 
 				break;
 			}

@@ -33,6 +33,7 @@ void putdebug(const char *format, ...) {
 		fprintf(stdout, "DEBUG: ");
 		vfprintf(stdout, format, argp);
 		fprintf(stdout, "\n");
+		fflush(stdout);
 
 		va_end(argp);
 	}
