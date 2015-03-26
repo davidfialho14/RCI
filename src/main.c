@@ -83,7 +83,7 @@ int main(int argc, char const *argv[]) {
 			bzero(buffer, sizeof(buffer));
 			if(fgets(buffer, BUFSIZE, stdin) != NULL) {
 				//executar comando do utilizador
-				putdebugError("main", "processar comando do utilizador");
+				putdebug("processar comando do utilizador");
 
 				int errorCode = executeUserCommand(buffer);
 				switch(errorCode) {

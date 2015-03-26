@@ -223,7 +223,18 @@ int startServerSocket() {
 				//criado um socket com sucesso
 				//copiar sockaddr utilizado pelo socket para usar durante as comunicacoes
 				memcpy(&startServerAddress, aux->ai_addr, aux->ai_addrlen);
-				error = 0;
+
+				//definir intervalo de tempo
+				struct timeval tv;
+				tv.tv_sec = 5;
+				tv.tv_usec = 0;
+				if (setsockopt(startServerFd, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
+				    putdebugError("startServerSocket", "não foi possivel definir timeout de socket UDP");
+				    error = -1;
+				} else {
+					error = 0;
+				}
+
 				break;
 			}
 
