@@ -302,7 +302,7 @@ int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char 
 }
 
 #include <signal.h>
-#define ID_INTERVAL	5		//tempo em segundos entre IDs
+#define ID_INTERVAL	2					//tempo em segundos entre IDs
 volatile int idAvailable = TRUE;		//define quando o ID está disponivel
 
 /*
