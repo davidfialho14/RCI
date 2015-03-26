@@ -6,10 +6,10 @@
 #include <unistd.h>
 
 #include "communication.h"
-
 #include "error.h"
 #include "string_operations.h"
 #include "network_operations.h"
+#include "connections_set.h"
 
 Node curNode;
 int curRing = -1;	//definido a -1 quando o no nao esta registado em nenhuma anel
@@ -423,6 +423,12 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 	}
 
 	return nodeFd;
+}
+
+void closeConnection(int *fd) {
+	close(*fd);
+	rmConnection(*fd);
+	*fd = -1;
 }
 
 int readMessage(int fd, char *message, size_t messageSize) {

@@ -45,9 +45,6 @@ void puterror(const char *format, ...) {
 
 	fprintf(stderr, "erro: ");
 	vfprintf(stderr, format, argp);
-	if(errno != 0) {
-		fprintf(stderr, ": %s", strerror(errno));
-	}
 	fflush(stderr);
 
 	va_end(argp);

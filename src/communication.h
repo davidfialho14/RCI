@@ -76,6 +76,8 @@ int unregisterRing(int ringId);
  */
 int connectToNode(const char *nodeAddress, const char *nodePort);
 
+void closeConnection(int *fd);
+
 int readMessage(int fd, char *message, size_t messageSize);
 
 int sendMessage(int fd, const char *message);
