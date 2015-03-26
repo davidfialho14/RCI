@@ -13,6 +13,7 @@
 int handleNEW(int id, const char *ip, const char *port, int fd);
 int handleCON(int id, const char *ip, const char *port, int fd);
 int handleID(int id, int fd);
+int handleEND(int id, const char *ip, const char *port);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -148,6 +149,28 @@ int handleMessage(const char* message, int fd) {
 		putdebug("mensagem BOOT");
 		iAmStartNode = TRUE;
 		error = 0;
+
+	} else if(strcmp(command, "END") == 0 && argCount == 4) {	//mensagem END
+		putdebug("mensagem de END");
+
+		int id;
+		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
+			putdebugError("handleMessage", "END id da mensagem inválido");
+			return -1;
+		}
+
+		//testar o valor do identificador pretendido
+		if(id > MAXID) {
+			putdebugError("handleMessage", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			return -1;
+		}
+
+		//arg[1] - endereco IP
+		//arg[2] - porto
+
+		if( (error = handleEND(id, arg[1], arg[2])) == -1) {
+			putdebugError("handleMessage", "END falhou");
+		}
 
 	} else {
 		putdebugError("handleMessage", "mensagem inválida");
@@ -412,6 +435,43 @@ int rebuild() {
 				return -1;
 			}
 
+		}
+	}
+
+	return error;
+}
+
+int handleEND(int id, const char *ip, const char *port) {
+	int error = 0;
+
+	if(prediNode.fd == -1) {  // testar se so o nó solto no anel
+		//sou o nó solto no anel
+		putdebug("sou a ponta solta no anel");
+
+		//estabelecer ligacao com nó recebido
+		int fd = -1;
+		if( (fd = connectToNode(ip, port)) == -1) {
+			putdebugError("handleEND", "não foi possivel ligar à outra ponta do anel");
+			return -1;
+		}
+
+		//enviar uma mensagem de CON para restabelecer o anel
+		if(sendMessageCON(curNode.id, curNode.ip, curNode.port, fd) == -1) {
+			putdebugError("handleEND", "não foi possivel enviar CON à outra ponta do anel");
+			return -1;
+		}
+
+		//terminar ligação estabelecida
+		closeConnection(&fd);
+
+	} else {
+		//não sou o nó solto no anel
+		putdebug("não sou a ponta solta no anel");
+
+		//retransmitir mensagem para o predi
+		if(sendMessageEND(id, ip, port, prediNode.fd) == -1) {
+			putdebugError("handleEND", "envio de mensagem END a predi falhou");
+			return -1;
 		}
 	}
 

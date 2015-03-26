@@ -144,8 +144,8 @@ int main(int argc, char const *argv[]) {
 
 						// possivel tentativa de reconstrucao do anel
 						if(rebuild() == -1) {
-							puterror("não foi possível recontruir o anel");
-							putmessage("vai ser feito um reset ao nó");
+							puterror("não foi possível recontruir o anel\n");
+							putmessage("vai ser feito um reset ao nó\n");
 
 							//fechar todas as ligações com predi e succi
 							closeConnection(&succiNode.fd);
@@ -161,7 +161,7 @@ int main(int argc, char const *argv[]) {
 							}
 
 						} else {
-							putmessage("foi feita uma reconstrução do anel com sucesso");
+							putmessage("foi feita uma reconstrução do anel com sucesso\n");
 						}
 					}
 
