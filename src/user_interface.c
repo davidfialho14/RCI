@@ -256,6 +256,22 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 
 		} else if(errorCode == 1) { 	//o anel nao esta vazio
 
+			if(strcmp(startNode.ip, curNode.ip) == 0 && strcmp(startNode.port, curNode.port) == 0) {
+				putdebugError("join", "servidor de arranque retornou endereco de arranque igual ao do nó");
+				puterror("servidor de arranque está desactualizado\n");
+				putmessage("exprimente juntar-se a outro anel\n");
+				closeConnection(&startNode.fd);
+				return -1;
+			}
+
+			//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
+			if(startNode.id == nodeId) {
+				puterror("o identificador %d já existe no anel\n" , nodeId);
+				putmessage("escolha outro identificador\n");
+				closeConnection(&startNode.fd);
+				return -1;
+			}
+
 			//estabelecer uma ligacao com o nó de arranque
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				putdebugError("join", "ligacao com nó de arranque falhou");
@@ -264,24 +280,11 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 				return -1;
 			}
 
-			if(strcmp(startNode.ip, curNode.ip) == 0 && strcmp(startNode.port, curNode.port) == 0) {
-				putdebugError("join", "servidor de arranque retornou endereco de arranque igual ao do nó");
-				puterror("servidor de arranque está desactualizado\n");
-				putmessage("exprimente juntar-se a outro anel\n");
-				return -1;
-			}
-
-			//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
-			if(startNode.id == nodeId) {
-				puterror("o identificador %d já existe no anel\n" , nodeId);
-				putmessage("escolha outro identificador\n");
-				return -1;
-			}
-
 			//pedir ao nó de arranque as informacoes do seu succi no anel
 			if(sendMessageID(startNode.fd, nodeId) == -1) {
 				putdebugError("join", "pedido do endereço do succi ao nó de arranque falhou");
 				puterror("comunicação com o nó de arranque do anel falhou\n");
+				closeConnection(&startNode.fd);
 				return -1;
 			}
 
@@ -289,6 +292,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			if(waitForSUCC(startNode.fd, &succ) == -1) {
 				putdebugError("join", "espera pela resposta do servidor de arranque");
 				puterror("comunicação com o nó de arranque do anel falhou\n");
+				closeConnection(&startNode.fd);
 				return -1;
 			}
 
