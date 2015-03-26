@@ -260,6 +260,21 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				putdebugError("join", "ligacao com nó de arranque falhou");
 				puterror("ligação ao nó de arranque do anel falhou\n");
+				putmessage("Nota: é possível que este erro resulte de um servidor desactualizado");
+				return -1;
+			}
+
+			if(strcmp(startNode.ip, curNode.ip) == 0 && strcmp(startNode.port, curNode.port) == 0) {
+				putdebugError("join", "servidor de arranque retornou endereco de arranque igual ao do nó");
+				puterror("servidor de arranque está desactualizado\n");
+				putmessage("exprimente juntar-se a outro anel\n");
+				return -1;
+			}
+
+			//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
+			if(startNode.id == nodeId) {
+				puterror("o identificador %d já existe no anel\n" , nodeId);
+				putmessage("escolha outro identificador\n");
 				return -1;
 			}
 
@@ -285,7 +300,8 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 
 			//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
 			if(succ.id == nodeId) {
-				puterror("o identificador %d já existe no anel, escolha outro por favor\n", nodeId);
+				puterror("o identificador %d já existe no anel\n" , nodeId);
+				putmessage("escolha outro identificador\n");
 				return -1;
 			}
 
