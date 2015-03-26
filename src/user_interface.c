@@ -260,7 +260,6 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 				putdebugError("join", "servidor de arranque retornou endereco de arranque igual ao do nó");
 				puterror("servidor de arranque está desactualizado\n");
 				putmessage("exprimente juntar-se a outro anel\n");
-				closeConnection(&startNode.fd);
 				return -1;
 			}
 
@@ -268,7 +267,6 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			if(startNode.id == nodeId) {
 				puterror("o identificador %d já existe no anel\n" , nodeId);
 				putmessage("escolha outro identificador\n");
-				closeConnection(&startNode.fd);
 				return -1;
 			}
 
