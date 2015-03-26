@@ -155,6 +155,9 @@ int executeUserCommand(const char *input) {
 
 			if( (error = handleQRY(curNode.id, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
 				putdebugError("executeUserCommand", "pesquisa pelo id %d falhou", searchedId);
+				puterror("não foi possível excutar pesquisa\n");
+				putmessage("Nota: verifique se existe uma ligação à rede estabelecida\n");
+
 			} else if(error == 1) {
 				//o nó actual foi quem iniciou a procura
 				printf("nó responsavel por %d:\n", searchedId);
@@ -256,21 +259,21 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			//estabelecer uma ligacao com o nó de arranque
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				putdebugError("join", "ligacao com nó de arranque falhou");
-				puterror("ligação ao nó de arranque do anel falhou");
+				puterror("ligação ao nó de arranque do anel falhou\n");
 				return -1;
 			}
 
 			//pedir ao nó de arranque as informacoes do seu succi no anel
 			if(sendMessageID(startNode.fd, nodeId) == -1) {
 				putdebugError("join", "pedido do endereço do succi ao nó de arranque falhou");
-				puterror("comunicação com o nó de arranque do anel falhou");
+				puterror("comunicação com o nó de arranque do anel falhou\n");
 				return -1;
 			}
 
 			//esperar pela resposta do nó de arranque
 			if(waitForSUCC(startNode.fd, &succ) == -1) {
 				putdebugError("join", "espera pela resposta do servidor de arranque");
-				puterror("comunicação com o nó de arranque do anel falhou");
+				puterror("comunicação com o nó de arranque do anel falhou\n");
 				return -1;
 			}
 
@@ -287,7 +290,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			}
 
 		} else {
-			puterror("comunicação com o servidor de arranque falhou");
+			puterror("comunicação com o servidor de arranque falhou\n");
 			putdebugError("join", "pedido de nó de arranque falhou");
 			return -1;
 		}

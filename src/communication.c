@@ -419,6 +419,13 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 					nodeFd = -1;
 				} else {
 					putdebug("ligação %d estabelecida com: %s %s", nodeFd, nodeAddress, nodePort);
+
+					//definir um timeout para as comunicações
+					struct timeval tv;
+					tv.tv_sec = 5;       /* Timeout in seconds */
+					setsockopt(nodeFd, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
+					setsockopt(nodeFd, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
+
 					break;	//sair apos ligacao ter sido estabelecida
 				}
 			}

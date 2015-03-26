@@ -74,6 +74,12 @@ int main(int argc, char const *argv[]) {
 				putdebugError("main", "nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
+
+				//definir um timeout para as comunicações
+				struct timeval tv;
+				tv.tv_sec = 5;       /* Timeout in seconds */
+				setsockopt(connectionFd, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
+				setsockopt(connectionFd, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 			}
 		}
 
