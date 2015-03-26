@@ -301,8 +301,40 @@ int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char 
 	return error;
 }
 
+#include <signal.h>
+#define ID_INTERVAL	5		//tempo em segundos entre IDs
+volatile int idAvailable = TRUE;		//define quando o ID está disponivel
+
+/*
+ * descricao: funcao que trata o sinal de alarme gerado pelo tratamento da mensagem ID
+ * Nota: este alarme é utilizado para garantir que o nó está num estado estável entre dois IDs
+ */
+void timeExpired(int signal)
+{
+    if(signal == SIGALRM)
+    {
+    	putdebug("tempo de espera entre IDs espirou");
+        idAvailable = TRUE;
+    }
+}
+
 int handleID(int id, int fd) {
 	int error = -1;
+
+	//definir alarme para contar tempo entre IDs
+	signal(SIGALRM, timeExpired);
+
+	//testar se esta disponivel
+	if(!idAvailable) {
+		putdebugError("handleID", "insercoes estao ocupadas");
+		//notificar fonte da pesquisa
+		sendMessage(fd, "BUSY\n");
+		return 0;
+	}
+
+	//definir que novas insercoes nao esta disponiveis temporariamente
+	alarm(ID_INTERVAL);
+	idAvailable = FALSE;
 
 	Node succNode;
 

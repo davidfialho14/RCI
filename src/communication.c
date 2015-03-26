@@ -653,11 +653,16 @@ int waitForSUCC(int fd, Node *succNode) {
 		char extra[BUFSIZE];
 
 		//filtrar mensagem
-		if(sscanf(message, "%s %d %s %s %s", command,
-				&succNode->id, succNode->ip, succNode->port, extra) == 4) {
+		int argCount = sscanf(message, "%s %d %s %s %s", command,
+				&succNode->id, succNode->ip, succNode->port, extra);
 
+		if(strcmp(command, "SUCC") == 0 && argCount == 4) {
 			//resposta correcta
 			error = 0;
+
+		} else if(strcmp(command, "BUSY") == 0 && argCount == 1) {
+			//nó de arranque está ocupado
+			error = -2;
 
 		} else {
 			putdebug("waitForSUCC", "mensagem de SUCC recebida incorrecta");
