@@ -131,16 +131,38 @@ int main(int argc, char const *argv[]) {
 					rmConnection(connectionFd);	//remover no do conjunto de ligacoes
 					putdebug("ligacao %d terminada", connectionFd);
 
-					if(connectionFd == succiNode.fd) {
-						succiNode.fd = -1;
-						succiNode.id = -1;
-						putdebug("ligação terminada com succi");
-					}
-
 					if(connectionFd == prediNode.fd) {
 						prediNode.fd = -1;
 						prediNode.id = -1;
 						putdebug("ligação terminada com predi");
+					}
+
+					if(connectionFd == succiNode.fd) {
+						succiNode.fd = -1;
+						succiNode.id = -1;
+						putdebug("ligação terminada com succi");
+
+						// possivel tentativa de reconstrucao do anel
+						if(rebuild() == -1) {
+							puterror("não foi possível recontruir o anel\n");
+							putmessage("vai ser feito um reset ao nó\n");
+
+							//fechar todas as ligações com predi e succi
+							closeConnection(&succiNode.fd);
+							closeConnection(&prediNode.fd);
+
+							curNode.id = succiNode.id = prediNode.id = -1;
+
+							if(iAmStartNode) {
+								//remover anel do servidor
+								unregisterRing(curRing);
+								curRing = -1;
+								iAmStartNode = FALSE;
+							}
+
+						} else {
+							putmessage("foi feita uma reconstrução do anel com sucesso\n");
+						}
 					}
 
 				} else {
