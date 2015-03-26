@@ -242,7 +242,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			iAmStartNode = TRUE;
 			if(registerAsStartingNode(ring, &curNode) == -1) {
 				putdebugError("join", "registo como nó de arranque falhou");
-				puterror("tentativa de registo no servidor de arranque falhou");
+				puterror("tentativa de registo no servidor de arranque falhou\n");
 				curNode.id = -1;	//colocar id do nó como não definido
 				return -1;
 
