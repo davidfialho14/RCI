@@ -459,9 +459,11 @@ int connectToNode(const char *nodeAddress, const char *nodePort) {
 }
 
 void closeConnection(int *fd) {
-	close(*fd);
-	rmConnection(*fd);
-	*fd = -1;
+	if(*fd >= 0) {
+		close(*fd);
+		rmConnection(*fd);
+		*fd = -1;
+	}
 }
 
 int readMessage(int fd, char *message, size_t messageSize) {
@@ -674,6 +676,19 @@ int sendSUCC(int fd, const Node *succNode) {
 	//criar mensagem
 	char message[BUFSIZE];
 	sprintf(message, "SUCC %d %s %s\n", succNode->id, succNode->ip, succNode->port);
+
+	//enviar mensagem ao predi
+	error = sendMessage(fd, message);
+
+	return error;
+}
+
+int sendMessageEND(int id, const char *ip, const char *port, int fd) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "END %d %s %s\n", id, ip, port);
 
 	//enviar mensagem ao predi
 	error = sendMessage(fd, message);

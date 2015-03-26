@@ -355,3 +355,65 @@ int distance(int srcId, int destId) {
 
 	return dist;
 }
+
+int rebuild() {
+	int error = 0;
+
+	if(succiNode.fd == -1) {			// ligacao com succi inexistente
+		if(prediNode.fd == -1) {		// ligacao com predi inexistente
+			//ficou ultimo nó no anel
+			putdebug("saida abrupta: nó passa a ser o único nó no anel");
+
+			if(!iAmStartNode) {
+				//registar-se como nó de arranque
+				if(registerAsStartingNode(curRing, &curNode) == -1) {
+					putdebugError("rebuild", "registo no servidor falhou");
+					return -1;
+				}
+			}
+
+		} else {
+			//existem mais nó no anel
+			putdebug("saida abrupta");
+
+			if(!iAmStartNode) {
+				//obter nó de arranque do anel
+				putdebug("tentar obter nó de arranque");
+				Node startNode;		// nó de arranque
+				if(getStartNode(curRing, &startNode) == -1) {
+					putdebugError("rebuild", "obtencao de nó de arranque falhou");
+					return -1;
+				}
+
+				//tentar ligar ao nó de arranque para verificar se ainda está activo
+				putdebug("tentar ligar ao nó de arranque");
+				if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
+					//nó de arranque foi terminado
+					putdebug("nó de arranque foi terminado");
+
+					//registar-se como nó de arranque
+					if(registerAsStartingNode(curRing, &curNode) == -1) {
+						putdebugError("rebuild", "registo no servidor falhou");
+						return -1;
+					}
+
+					iAmStartNode = TRUE;
+
+				} else {
+					//nó de arranque ainda está activo
+					closeConnection(&startNode.fd);
+					putdebug("nó de arranque está activo");
+				}
+			}
+
+			// enviar mensagem com os seus dados ao predi
+			if(sendMessageEND(curNode.id, curNode.ip, curNode.port, prediNode.fd) == -1) {
+				putdebugError("rebuild", "envio de mensagem END a predi falhou");
+				return -1;
+			}
+
+		}
+	}
+
+	return error;
+}
