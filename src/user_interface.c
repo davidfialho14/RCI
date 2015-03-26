@@ -289,10 +289,16 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			}
 
 			//esperar pela resposta do nó de arranque
-			if(waitForSUCC(startNode.fd, &succ) == -1) {
-				putdebugError("join", "espera pela resposta do servidor de arranque");
+			int errorCode = waitForSUCC(startNode.fd, &succ);
+			if( errorCode == -1) {
+				putdebugError("join", "espera pela resposta do nó de arranque");
 				puterror("comunicação com o nó de arranque do anel falhou\n");
 				closeConnection(&startNode.fd);
+				return -1;
+			} else if(errorCode == -2) {
+				puterror("anel está ocupado\n");
+				putmessage("Nota: espere 2 segundos e volte a tentar\n");
+				putmessage("Nota: ou exprimente outro anel\n");
 				return -1;
 			}
 

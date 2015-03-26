@@ -77,7 +77,7 @@ int main(int argc, char const *argv[]) {
 
 				//definir um timeout para as comunicações
 				struct timeval tv;
-				tv.tv_sec = 5;       /* Timeout in seconds */
+				tv.tv_sec = 5;
 				setsockopt(connectionFd, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 				setsockopt(connectionFd, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 			}
