@@ -71,7 +71,7 @@ int main(int argc, char const *argv[]) {
 			if( (connectionFd = accept(curNode.fd, (struct sockaddr*)&addr, &addrlen)) == -1) {
 				putdebugError("main", "ligação não foi aceite");
 			} else {
-				putdebugError("main", "nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
+				putdebug("nova ligação %d com endereço: %s", connectionFd, inet_ntoa(addr.sin_addr));
 				//adicionar descritor ao conjunto de descritores de ligacao
 				addConnection(connectionFd);
 
@@ -144,7 +144,7 @@ int main(int argc, char const *argv[]) {
 
 						// possivel tentativa de reconstrucao do anel
 						if(rebuild() == -1) {
-							puterror("não foi possível recontruir o anel\n");
+							puterror("não foi possível reconstruir o anel\n");
 							putmessage("vai ser feito um reset ao nó\n");
 
 							//fechar todas as ligações com predi e succi
