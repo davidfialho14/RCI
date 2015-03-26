@@ -246,13 +246,20 @@ int handleCON(int id, const char *ip, const char *port, int fd) {
 		strcpy(prediNode.ip, succiNode.ip);
 		strcpy(prediNode.port, succiNode.port);
 		prediNode.fd = fd;
+
+		if(prediNode.fd == succiNode.fd) {
+			//penultimo nó saiu do anel - fica apenas este nó no anel
+			closeConnection(&prediNode.fd);
+			closeConnection(&succiNode.fd);
+			prediNode.id = succiNode.id = -1;
+		}
+
 		error = 0;
 
 	} else {
 		//terminar ligacao com succi
 		putdebug("terminei ligacao com o succi actual %d", succiNode.fd);
-		close(succiNode.fd);
-		rmConnection(succiNode.fd);
+		closeConnection(&succiNode.fd);
 
 		//ligar ao no recebido
 		if( (succiNode.fd = connectToNode(ip, port)) == -1) {
