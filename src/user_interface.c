@@ -219,83 +219,91 @@ int insertNode(int ring, int nodeId, int succiId,
 int join(int ring, int nodeId, int succiId, const char *succiAddress, const char *succiPort) {
 	int error = -1;
 
-	Node startNode;		//vai ser ingorado
-	int errorCode = getStartNode(ring, &startNode);
-	if(errorCode == 0) {			//anel esta vazio
+	Node succ;		// informacoes do succi com quem fazer join
 
-		Node node;
-		node.id = nodeId;
-		strcpy(node.ip, curNode.ip);
-		strcpy(node.port, curNode.port);
+	if(succiId == -1 || succiAddress == NULL || succiPort == NULL) {
+		// join com pesquisa
+		putdebug("join com pesqisa");
 
-		//registar nó como nó de arranque do anel
-		iAmStartNode = TRUE;
-		if(registerAsStartingNode(ring, &node) == -1) {
-			putdebugError("join", "registo como nó de arranque falhou");
-		} else {
-			putmessage("registado no anel %d com id %d\n", ring, nodeId);
-			//actualizar informacoes do nó tendo em conta que é o unico nó no anel
-			curRing = ring;						//definir anel do nó
+		// obter nó de arranque caso o anel já exista
+		Node startNode;		//vai ser ingorado
+		int errorCode = getStartNode(ring, &startNode);
+
+		if(errorCode == 0) {			//anel esta vazio
+
 			succiNode.id = succiNode.fd = -1;	//succi ainda nao definido
-			curNode.id = nodeId;				//definir id do nó
 			prediNode.id = prediNode.fd = -1;	//predi ainda nao definido
-			error = 0;
-		}
+			curNode.id = nodeId;				//definir id do nó
 
-	} else if(errorCode == 1){ 	//o anel nao esta vazio
+			//registar nó como nó de arranque do anel
+			iAmStartNode = TRUE;
+			if(registerAsStartingNode(ring, &curNode) == -1) {
+				putdebugError("join", "registo como nó de arranque falhou");
+				puterror("tentativa de registo no servidor de arranque falhou");
+				curNode.id = -1;	//colocar id do nó como não definido
+				return -1;
 
-		if(succiId == -1 || succiAddress == NULL || succiPort == NULL) {
-			//join com pesquisa
+			} else {
+				//definir anel do nó
+				curRing = ring;
+				putmessage("registado no anel %d com id %d\n", curRing, curNode.id);
+				error = 0;
+			}
+
+		} else if(errorCode == 1) { 	//o anel nao esta vazio
 
 			//estabelecer uma ligacao com o nó de arranque
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				putdebugError("join", "ligacao com nó de arranque falhou");
 				puterror("ligação ao nó de arranque do anel falhou");
-			} else {
+				return -1;
+			}
 
-				//pedir ao nó de arranque as informacoes do seu succi no anel
-				if( (error = sendMessageID(startNode.fd, nodeId)) == -1) {
-					putdebugError("join", "pedido do endereço do succi ao nó de arranque falhou");
-					puterror("comunicação com o nó de arranque do anel falhou");
-				} else {
+			//pedir ao nó de arranque as informacoes do seu succi no anel
+			if(sendMessageID(startNode.fd, nodeId) == -1) {
+				putdebugError("join", "pedido do endereço do succi ao nó de arranque falhou");
+				puterror("comunicação com o nó de arranque do anel falhou");
+				return -1;
+			}
 
-					//esperar pela resposta do nó de arranque
-					Node succ;
-					if( (error = waitForSUCC(startNode.fd, &succ)) == -1) {
-						putdebugError("join", "espera pela resposta do servidor de arranque");
-						puterror("comunicação com o nó de arranque do anel falhou");
-					} else {
+			//esperar pela resposta do nó de arranque
+			if(waitForSUCC(startNode.fd, &succ) == -1) {
+				putdebugError("join", "espera pela resposta do servidor de arranque");
+				puterror("comunicação com o nó de arranque do anel falhou");
+				return -1;
+			}
 
-						//fechar ligacao com succi
-						putdebug("terminei ligacao com succi %d", startNode.fd);
-						close(startNode.fd);
-						rmConnection(startNode.fd);
-						startNode.fd = -1;
+			//fechar ligacao com succi
+			putdebug("terminei ligacao com succi %d", startNode.fd);
+			close(startNode.fd);
+			rmConnection(startNode.fd);
+			startNode.fd = -1;
 
-						//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
-						if(succ.id == nodeId) {
-							puterror("o identificador %d já existe no anel, escolha outro por favor\n", nodeId);
-							error = -1;
-						} else {
-							//inserir nó no anel
-							if( (error = insertNode(ring, nodeId, succ.id, succ.ip, succ.port)) == -1) {
-								putdebugError("join", "insercao do nó falhou");
-							}
-						}
-					}
-				}
+			//testar se o id do succi retornado pela pesquisa é igual ao id pretendido
+			if(succ.id == nodeId) {
+				puterror("o identificador %d já existe no anel, escolha outro por favor\n", nodeId);
+				return -1;
 			}
 
 		} else {
-			//inserir nó no anel com endereco dado
-			if( (error = insertNode(ring, nodeId, succiId, succiAddress, succiPort)) == -1) {
-				putdebugError("join", "insercao do nó falhou");
-			}
+			puterror("comunicação com o servidor de arranque falhou");
+			putdebugError("join", "pedido de nó de arranque falhou");
+			return -1;
 		}
 
 	} else {
-		puterror("comunicação com o servidor de arranque falhou");
-		putdebugError("join", "pedido de nó de arranque falhou");
+		//join sem pesquisa
+		putdebug("join sem pesquisa");
+
+		//succ é definido com os valores recebidos
+		succ.id = succiId;
+		strcpy(succ.ip, succiAddress);
+		strcpy(succ.port, succiPort);
+	}
+
+	//inserir nó no anel com o succi obtido
+	if(insertNode(ring, nodeId, succ.id, succ.ip, succ.port) == -1) {
+		puterror("inserção no anel falhou\n");
 	}
 
 	return error;
@@ -359,7 +367,7 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 	int succiFd = -1;
 	if( (succiFd = connectToNode(succiAddress, succiPort)) == -1) {
 		putdebug("insertNode", "tentativa de ligação com succi (%s %s) falhou", succiAddress, succiPort);
-		puterror("não foi possivel ligar ao succi");
+		puterror("não foi possivel ligar ao succi\n");
 	} else {
 		//adionar ligacao ao conjunto
 		addConnection(succiFd);
