@@ -4,6 +4,7 @@
 #include <string.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "communication.h"
 #include "error.h"
@@ -22,6 +23,17 @@ struct sockaddr startServerAddress;
 int iAmStartNode = FALSE;
 
 extern int debug;
+
+/*
+ * descricao: hadler para o sigpipe
+ */
+void sigpipeHandler(int signal) {
+	if(signal == SIGPIPE) {
+		putdebugError("sigpipeHandler", "ocorreu um erro na comunicação entre nós");
+		putchar('\n');
+		puterror("ocorreu um erro interno na comunicação\n");
+	}
+}
 
 /*****************
  * Inicialização *
@@ -56,6 +68,9 @@ int initializeCommunication(int argc, const char *argv[]) {
 		return initialized;
 	}
 	putdebug("socket de so servidor de arranque criado");	//debug
+
+	// definir handler para os sigpipes
+	signal(SIGPIPE, sigpipeHandler);
 
 	return initialized;
 }

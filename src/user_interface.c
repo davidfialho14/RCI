@@ -260,7 +260,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				putdebugError("join", "ligacao com nó de arranque falhou");
 				puterror("ligação ao nó de arranque do anel falhou\n");
-				putmessage("Nota: é possível que este erro resulte de um servidor desactualizado");
+				putmessage("Nota: é possível que este erro resulte de um servidor desactualizado\n");
 				return -1;
 			}
 
