@@ -282,6 +282,9 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			if(sendMessageID(startNode.fd, nodeId) == -1) {
 				putdebugError("join", "pedido do endereço do succi ao nó de arranque falhou");
 				puterror("comunicação com o nó de arranque do anel falhou\n");
+				putmessage("Sugestão: verifique a ligação à rede do anel");
+				putmessage("Nota: caso não haja problemas com a ligação isto deve-se provavelmente a um servidor desactualizado\n");
+				putmessage("Sugestão: nesse caso escolha outro anel\n");
 				closeConnection(&startNode.fd);
 				return -1;
 			}
@@ -291,12 +294,15 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 			if( errorCode == -1) {
 				putdebugError("join", "espera pela resposta do nó de arranque");
 				puterror("comunicação com o nó de arranque do anel falhou\n");
+				putmessage("Sugestão: verifique a ligação à rede do anel");
+				putmessage("Nota: caso não haja problemas com a ligação isto deve-se provavelmente a um servidor desactualizado\n");
+				putmessage("Sugestão: nesse caso escolha outro anel\n");
 				closeConnection(&startNode.fd);
 				return -1;
 			} else if(errorCode == -2) {
-				puterror("anel está ocupado\n");
-				putmessage("Nota: espere 2 segundos e volte a tentar\n");
-				putmessage("Nota: ou exprimente outro anel\n");
+				puterror("o anel escolhido está ocupado\n");
+				putmessage("Sugestão 1: espere 2 segundos e volte a tentar\n");
+				putmessage("Sugestão 2: exprimente outro anel\n");
 				closeConnection(&startNode.fd);
 				return -1;
 			}
@@ -325,8 +331,8 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 		putdebug("join sem pesquisa");
 
 		if(strcmp(curNode.ip, succiAddress) == 0 && strcmp(curNode.port, succiPort) == 0) {
-			puterror("endereço do nó correponde ao endereço do succi\n");
-			putmessage("por favor utilize outro endereço e/ou porto\n");
+			puterror("o endereço do nó corresponde ao endereço indicado para o succi\n");
+			putmessage("Sugestão: ligue-se a um nó com um endereço diferente e/ou porto diferentes dos do próprio nó\n");
 			return -1;
 		}
 
