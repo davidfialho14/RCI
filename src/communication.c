@@ -691,10 +691,12 @@ int sendMessageEND(int id, const char *ip, const char *port, int fd, int start) 
 
 	//criar mensagem
 	char message[BUFSIZE];
-	sprintf(message, "END %d %s %s\n", id, ip, port);
+	sprintf(message, "END %d %s %s", id, ip, port);
 
 	if(start) {
-		strcat(message, " START");
+		strcat(message, " START\n");
+	} else {
+		strcat(message, "\n");
 	}
 
 	//enviar mensagem ao predi
