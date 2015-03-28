@@ -51,6 +51,33 @@ int handleMessage(const char* message, int fd) {
 			putdebugError("handleMessage", "CON falhou");
 		}
 
+	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {	//mensagem NEW
+		putdebug("mensagem de NEW");
+
+		if(curRing == -1 && insertingInRing == -1) {
+			putdebugError("handleMessage", "nó recebeu uma mensagem NEW sem estar inserido em nenhum anel ou a tentar inserir-se");
+			return -1;
+		}
+
+		int id;
+		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
+			putdebugError("handleMessage", "CON id da mensagem inválido");
+			return -1;
+		}
+
+		//testar o valor do identificador pretendido
+		if(id > MAXID) {
+			putdebugError("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+			return -1;
+		}
+
+		//arg[1] - endereco IP
+		//arg[2] - porto
+
+		if( (error = handleNEW(id, arg[1], arg[2], fd)) == -1) {
+			putdebugError("handleMessage", "NEW falhou");
+		}
+
 	} else {
 
 		if(curRing == -1) {
@@ -106,28 +133,6 @@ int handleMessage(const char* message, int fd) {
 					error = 0;
 				}
 			}
-		} else if(strcmp(command, "NEW") == 0 && argCount == 4) {	//mensagem NEW
-			putdebug("mensagem de NEW");
-
-			int id;
-			if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
-				putdebugError("handleMessage", "CON id da mensagem inválido");
-				return -1;
-			}
-
-			//testar o valor do identificador pretendido
-			if(id > MAXID) {
-				putdebugError("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
-				return -1;
-			}
-
-			//arg[1] - endereco IP
-			//arg[2] - porto
-
-			if( (error = handleNEW(id, arg[1], arg[2], fd)) == -1) {
-				putdebugError("handleMessage", "NEW falhou");
-			}
-
 		} else if(strcmp(command, "ID") == 0 && argCount == 2) {	//mensagem ID
 			putdebug("mensagem ID");
 
