@@ -495,6 +495,34 @@ int rebuild() {
 					putdebugError("rebuild", "registo no servidor falhou");
 					return -1;
 				}
+			} else {
+				int n = curNode.id + 1;		//usar id para ser diferente
+				while(n < (INT_MAX - 1)) {
+					putdebug("tentar registar como anel %d", curRing + n);
+
+					Node startNode;		// nó de arranque
+					int errorCode = getStartNode(curRing + n, &startNode);
+					if(errorCode == -1) {
+						putdebugError("rebuild", "obtencao de nó de arranque falhou");
+						return -1;
+					} else if(errorCode == 0) {
+						//não existe nenhum anel com este id
+
+						//registar anel e como nó de arranque
+						if(registerAsStartingNode(curRing + n, &curNode) == -1) {
+							putdebugError("handleEND", "registo no servidor falhou");
+							return -1;
+						} else {
+							//registo com successo notificar outros nos no anel
+							curRing += n;
+							putmessage("novo anel %d\n", curRing);
+							break;						}
+
+					} else {
+						//exprimentar proximo id para o anel
+						n++;
+					}
+				}
 			}
 
 		} else {
@@ -505,36 +533,6 @@ int rebuild() {
 			if(sendMessageEND(curNode.id, curNode.ip, curNode.port, prediNode.fd, iAmStartNode) == -1) {
 				putdebugError("rebuild", "envio de mensagem END a predi falhou");
 				return -1;
-			}
-
-			if(!iAmStartNode) {
-				//obter nó de arranque do anel
-				putdebug("tentar obter nó de arranque");
-				Node startNode;		// nó de arranque
-				if(getStartNode(curRing, &startNode) == -1) {
-					putdebugError("rebuild", "obtencao de nó de arranque falhou");
-					return -1;
-				}
-
-				//tentar ligar ao nó de arranque para verificar se ainda está activo
-				putdebug("tentar ligar ao nó de arranque");
-				if( (startNode.fd = connectToNode(startNode.ip, startNode.port)) == -1) {
-					//nó de arranque foi terminado
-					putdebug("nó de arranque foi terminado");
-
-					//registar-se como nó de arranque
-					if(registerAsStartingNode(curRing, &curNode) == -1) {
-						putdebugError("rebuild", "registo no servidor falhou");
-						return -1;
-					}
-
-					iAmStartNode = TRUE;
-
-				} else {
-					//nó de arranque ainda está activo
-					closeConnection(&startNode.fd);
-					putdebug("nó de arranque está activo");
-				}
 			}
 		}
 	}
@@ -571,11 +569,13 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 					} else {
 						//registo com successo notificar outros nos no anel
 						curRing += n;
+
 						if(sendMessageRING(succiNode.fd, curRing, curNode.id) == -1) {
 							putdebugError("handleEND", "envio de RING falhou");
 							return -1;
 						} else {
 							putmessage("novo anel %d\n", curRing);
+							break;
 						}
 					}
 
@@ -591,7 +591,6 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 				curRing = -1;
 				return -1;
 			}
-
 		}
 
 		//estabelecer ligacao com nó recebido
