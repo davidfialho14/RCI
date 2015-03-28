@@ -178,6 +178,19 @@ int main(int argc, char const *argv[]) {
 						//notificar quem enviou o pedido que ocorreu um erro
 						char answer[] = "ERROR\n";
 						sendMessage(connectionFd, answer);
+
+						if(connectionFd == prediNode.fd) {
+							prediNode.fd = -1;
+							prediNode.id = -1;
+							putdebug("ligação terminada com predi por causa de erro");
+						}
+
+						if(connectionFd == succiNode.fd) {
+							succiNode.fd = -1;
+							succiNode.id = -1;
+							putdebug("ligação terminada com succi por causa de erro");
+						}
+
 						//terminar ligacao
 						close(connectionFd);
 						rmConnection(connectionFd);
