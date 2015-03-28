@@ -20,11 +20,6 @@ int handleEND(int id, const char *ip, const char *port);
 int handleMessage(const char* message, int fd) {
 	int error = -1;
 
-	if(curRing == -1) {
-		putdebugError("handleMessage", "nó recebeu uma mensagem TCP sem estar inserido em nenhum anel");
-		return -1;
-	}
-
 	char command[BUFSIZE];	//comando da mensagem
 	char arg[5][IPSIZE];	//argumentos da mensagem
 	char extra[BUFSIZE];	//utilizado nao para testar se existe um argumento a mais
@@ -32,59 +27,9 @@ int handleMessage(const char* message, int fd) {
 	//filtrar mensagem
 	int argCount = sscanf(message, "%s %s %s %s %s %s %s", command, arg[0], arg[1], arg[2],
 															arg[3], arg[4], extra);
-
 	//identificar tipo de mensagem
 
-	if(strcmp(command, "QRY") == 0 && argCount == 3) {	//QRY message
-		putdebug("mensagem QRY");
-
-		//verificar que foi o predi quem fez a pesquisa
-		if(fd != prediNode.fd) {
-			putdebugError("handleMessage", "QRY feito sem ser pelo predi");
-			return -1;
-		}
-
-		int searcherId;
-		int searchedId;
-
-		if(stringToUInt(arg[0], (unsigned int*) &searcherId) == -1 ||
-		stringToUInt(arg[1], (unsigned int*) &searchedId) == -1) {
-			putdebugError("handleMessage", "QRY ids da mensagem inválidos");
-			return -1;
-		}
-
-		//verificar se este nó é o responsavel pelo id procurado
-		if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
-			//nó é responsavel pelo id procurado
-			//responder com o próprio IP e porto
-			putdebug("sou o nó responsável por %d: %d %s %s\n", searchedId, curNode.id, curNode.ip, curNode.port);
-			//passar resposta para o predi
-			if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
-					curNode.id, curNode.ip, curNode.port)) == -1) {
-					putdebugError("handleQRY", "passagem da resposta para o predi falhada");
-			}
-
-			error = 0;	//nao ocorreu nenhum erro
-		} else {
-			int ownerId;
-			char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
-
-			if( (error = handleQRY(searcherId, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
-				putdebugError("handleMessage", "QRY falhou");
-
-			} else if(error == 1) {
-				//o nó actual foi quem iniciou a procura
-				//isto nao é suposto acontecer aqui
-				putdebugError("handleMessage", "nó responsável incorrecto");
-				error = -1;
-			} else {
-				//mensagem retransmitida
-				putdebug("mensagem retransmitida");
-				error = 0;
-			}
-		}
-
-	} else if(strcmp(command, "CON") == 0 && argCount == 4) {	//mensagem CON
+	if(strcmp(command, "CON") == 0 && argCount == 4) {	//mensagem CON
 		putdebug("mensagem de CON");
 
 		int id;
@@ -106,81 +51,137 @@ int handleMessage(const char* message, int fd) {
 			putdebugError("handleMessage", "CON falhou");
 		}
 
-	} else if(strcmp(command, "NEW") == 0 && argCount == 4) {	//mensagem NEW
-		putdebug("mensagem de NEW");
-
-		int id;
-		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
-			putdebugError("handleMessage", "CON id da mensagem inválido");
-			return -1;
-		}
-
-		//testar o valor do identificador pretendido
-		if(id > MAXID) {
-			putdebugError("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
-			return -1;
-		}
-
-		//arg[1] - endereco IP
-		//arg[2] - porto
-
-		if( (error = handleNEW(id, arg[1], arg[2], fd)) == -1) {
-			putdebugError("handleMessage", "NEW falhou");
-		}
-
-	} else if(strcmp(command, "ID") == 0 && argCount == 2) {	//mensagem ID
-		putdebug("mensagem ID");
-
-		int nodeId;
-		if(stringToUInt(arg[0], (unsigned int*) &nodeId) == -1) {
-			putdebugError("handleMessage", "ID id da mensagem inválido");
-			return -1;
-		}
-
-		//testar o valor do identificador pretendido
-		if(nodeId > MAXID) {
-			putdebugError("handleMessage", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
-			return -1;
-		}
-
-		error = handleID(nodeId, fd);
-
-	} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {	//mensagem BOOT
-
-		//verificar que foi o predi quem enviou BOOT
-		if(fd != prediNode.fd) {
-			putdebugError("handleMessage", "BOOT feito sem ser pelo predi");
-			return -1;
-		}
-
-		putdebug("mensagem BOOT");
-		iAmStartNode = TRUE;
-		error = 0;
-
-	} else if(strcmp(command, "END") == 0 && argCount == 4) {	//mensagem END
-		putdebug("mensagem de END");
-
-		int id;
-		if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
-			putdebugError("handleMessage", "END id da mensagem inválido");
-			return -1;
-		}
-
-		//testar o valor do identificador pretendido
-		if(id > MAXID) {
-			putdebugError("handleMessage", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
-			return -1;
-		}
-
-		//arg[1] - endereco IP
-		//arg[2] - porto
-
-		if( (error = handleEND(id, arg[1], arg[2])) == -1) {
-			putdebugError("handleMessage", "END falhou");
-		}
-
 	} else {
-		putdebugError("handleMessage", "mensagem inválida");
+
+		if(curRing == -1) {
+			putdebugError("handleMessage", "nó recebeu uma mensagem TCP não CON sem estar inserido em nenhum anel");
+			return -1;
+		}
+
+		if(strcmp(command, "QRY") == 0 && argCount == 3) {	//QRY message
+			putdebug("mensagem QRY");
+
+			//verificar que foi o predi quem fez a pesquisa
+			if(fd != prediNode.fd) {
+				putdebugError("handleMessage", "QRY feito sem ser pelo predi");
+				return -1;
+			}
+
+			int searcherId;
+			int searchedId;
+
+			if(stringToUInt(arg[0], (unsigned int*) &searcherId) == -1 ||
+			stringToUInt(arg[1], (unsigned int*) &searchedId) == -1) {
+				putdebugError("handleMessage", "QRY ids da mensagem inválidos");
+				return -1;
+			}
+
+			//verificar se este nó é o responsavel pelo id procurado
+			if(distance(searchedId, curNode.id) < distance(searchedId, prediNode.id)) {
+				//nó é responsavel pelo id procurado
+				//responder com o próprio IP e porto
+				putdebug("sou o nó responsável por %d: %d %s %s\n", searchedId, curNode.id, curNode.ip, curNode.port);
+				//passar resposta para o predi
+				if( (error = sendMessageRSP(prediNode.fd, searcherId, searchedId,
+						curNode.id, curNode.ip, curNode.port)) == -1) {
+						putdebugError("handleQRY", "passagem da resposta para o predi falhada");
+				}
+
+				error = 0;	//nao ocorreu nenhum erro
+			} else {
+				int ownerId;
+				char ownerIp[BUFSIZE], ownerPort[BUFSIZE];
+
+				if( (error = handleQRY(searcherId, searchedId, &ownerId, ownerIp, ownerPort)) == -1) {
+					putdebugError("handleMessage", "QRY falhou");
+
+				} else if(error == 1) {
+					//o nó actual foi quem iniciou a procura
+					//isto nao é suposto acontecer aqui
+					putdebugError("handleMessage", "nó responsável incorrecto");
+					error = -1;
+				} else {
+					//mensagem retransmitida
+					putdebug("mensagem retransmitida");
+					error = 0;
+				}
+			}
+		} else if(strcmp(command, "NEW") == 0 && argCount == 4) {	//mensagem NEW
+			putdebug("mensagem de NEW");
+
+			int id;
+			if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
+				putdebugError("handleMessage", "CON id da mensagem inválido");
+				return -1;
+			}
+
+			//testar o valor do identificador pretendido
+			if(id > MAXID) {
+				putdebugError("executeUserCommand", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+				return -1;
+			}
+
+			//arg[1] - endereco IP
+			//arg[2] - porto
+
+			if( (error = handleNEW(id, arg[1], arg[2], fd)) == -1) {
+				putdebugError("handleMessage", "NEW falhou");
+			}
+
+		} else if(strcmp(command, "ID") == 0 && argCount == 2) {	//mensagem ID
+			putdebug("mensagem ID");
+
+			int nodeId;
+			if(stringToUInt(arg[0], (unsigned int*) &nodeId) == -1) {
+				putdebugError("handleMessage", "ID id da mensagem inválido");
+				return -1;
+			}
+
+			//testar o valor do identificador pretendido
+			if(nodeId > MAXID) {
+				putdebugError("handleMessage", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+				return -1;
+			}
+
+			error = handleID(nodeId, fd);
+
+		} else if(strcmp(command, "BOOT") == 0 && argCount == 1) {	//mensagem BOOT
+
+			//verificar que foi o predi quem enviou BOOT
+			if(fd != prediNode.fd) {
+				putdebugError("handleMessage", "BOOT feito sem ser pelo predi");
+				return -1;
+			}
+
+			putdebug("mensagem BOOT");
+			iAmStartNode = TRUE;
+			error = 0;
+
+		} else if(strcmp(command, "END") == 0 && argCount == 4) {	//mensagem END
+			putdebug("mensagem de END");
+
+			int id;
+			if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
+				putdebugError("handleMessage", "END id da mensagem inválido");
+				return -1;
+			}
+
+			//testar o valor do identificador pretendido
+			if(id > MAXID) {
+				putdebugError("handleMessage", "o identificador do nó está limitado ao intervalo [0-%d]\n", MAXID);
+				return -1;
+			}
+
+			//arg[1] - endereco IP
+			//arg[2] - porto
+
+			if( (error = handleEND(id, arg[1], arg[2])) == -1) {
+				putdebugError("handleMessage", "END falhou");
+			}
+
+		} else {
+			putdebugError("handleMessage", "mensagem inválida");
+		}
 	}
 
 	return error;
