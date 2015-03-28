@@ -16,7 +16,7 @@ int handleNEW(int id, const char *ip, const char *port, int fd);
 int handleCON(int id, const char *ip, const char *port, int fd);
 int handleID(int id, int fd);
 int handleEND(int id, const char *ip, const char *port, int start);
-int handleRING(int id, int ring);
+int handleRING(int ring, int id);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -169,7 +169,7 @@ int handleMessage(const char* message, int fd) {
 			int start = FALSE;
 			if(argCount == 4) {
 				putdebug("nó de arranque ainda não foi encontrado");
-			} else if(argCount == 5) {
+			} else if(strcmp(arg[3], "START") == 0 && argCount == 5) {
 				putdebug("nó de arranque ainda já foi encontrado");
 				start = TRUE;
 			} else {
@@ -200,13 +200,13 @@ int handleMessage(const char* message, int fd) {
 			putdebug("mensagem de RING");
 
 			int id, ring;
-			if(stringToUInt(arg[0], (unsigned int*) &id) == -1 ||
-					stringToUInt(arg[1], (unsigned int*) &ring)) {
+			if(stringToUInt(arg[0], (unsigned int*) &ring) == -1 ||
+					stringToUInt(arg[1], (unsigned int*) &id)) {
 				putdebugError("handleMessage", "RING id ou ring da mensagem inválido");
 				return -1;
 			}
 
-			if( (error = handleRING(id, ring)) == -1) {
+			if( (error = handleRING(ring, id)) == -1) {
 				putdebugError("handleMessage", "RING falhou");
 			}
 
@@ -552,10 +552,11 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 
 			int n = curNode.id + 1;		//usar id para ser diferente
 			while(n < (INT_MAX - 1)) {
-				putdebug("tentar registar como anel %d", curRing + n);
+				int testRing = curRing + n;
+				putdebug("tentar registar como anel %d", testRing);
 
 				Node startNode;		// nó de arranque
-				int errorCode = getStartNode(curRing + n, &startNode);
+				int errorCode = getStartNode(testRing, &startNode);
 				if(errorCode == -1) {
 					putdebugError("rebuild", "obtencao de nó de arranque falhou");
 					return -1;
@@ -563,12 +564,12 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 					//não existe nenhum anel com este id
 
 					//registar anel e como nó de arranque
-					if(registerAsStartingNode(curRing + n, &curNode) == -1) {
+					if(registerAsStartingNode(testRing, &curNode) == -1) {
 						putdebugError("handleEND", "registo no servidor falhou");
 						return -1;
 					} else {
 						//registo com successo notificar outros nos no anel
-						curRing += n;
+						curRing = testRing;
 
 						if(sendMessageRING(succiNode.fd, curRing, curNode.id) == -1) {
 							putdebugError("handleEND", "envio de RING falhou");
@@ -629,11 +630,11 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 	return error;
 }
 
-int handleRING(int id, int ring) {
+int handleRING(int ring, int id) {
 	int error = 0;
 
 	//definir novo id do anel
-	curRing= ring;
+	curRing = ring;
 
 	putmessage("novo anel %d\n", curRing);
 	putmessage("anel reconstruído com sucesso após saída abrupta\n");
