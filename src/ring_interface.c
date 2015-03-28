@@ -15,7 +15,8 @@ int insertingInRing = -1;
 int handleNEW(int id, const char *ip, const char *port, int fd);
 int handleCON(int id, const char *ip, const char *port, int fd);
 int handleID(int id, int fd);
-int handleEND(int id, const char *ip, const char *port);
+int handleEND(int id, const char *ip, const char *port, int start);
+int handleRING(int id, int ring);
 
 int handleMessage(const char* message, int fd) {
 	int error = -1;
@@ -162,8 +163,19 @@ int handleMessage(const char* message, int fd) {
 			iAmStartNode = TRUE;
 			error = 0;
 
-		} else if(strcmp(command, "END") == 0 && argCount == 4) {	//mensagem END
+		} else if(strcmp(command, "END") == 0) {	//mensagem END
 			putdebug("mensagem de END");
+
+			int start = FALSE;
+			if(argCount == 4) {
+				putdebug("nó de arranque ainda não foi encontrado");
+			} else if(argCount == 5) {
+				putdebug("nó de arranque ainda já foi encontrado");
+				start = TRUE;
+			} else {
+				putdebugError("handleMessage", "mensagem inválida");
+				return -1;
+			}
 
 			int id;
 			if(stringToUInt(arg[0], (unsigned int*) &id) == -1) {
@@ -180,8 +192,22 @@ int handleMessage(const char* message, int fd) {
 			//arg[1] - endereco IP
 			//arg[2] - porto
 
-			if( (error = handleEND(id, arg[1], arg[2])) == -1) {
+			if( (error = handleEND(id, arg[1], arg[2], start)) == -1) {
 				putdebugError("handleMessage", "END falhou");
+			}
+
+		} else if(strcmp(command, "RING") == 0  && argCount == 3) {	//mensagem RING
+			putdebug("mensagem de RING");
+
+			int id, ring;
+			if(stringToUInt(arg[0], (unsigned int*) &id) == -1 ||
+					stringToUInt(arg[1], (unsigned int*) &ring)) {
+				putdebugError("handleMessage", "RING id ou ring da mensagem inválido");
+				return -1;
+			}
+
+			if( (error = handleRING(id, ring)) == -1) {
+				putdebugError("handleMessage", "RING falhou");
 			}
 
 		} else {
@@ -472,8 +498,14 @@ int rebuild() {
 			}
 
 		} else {
-			//existem mais nó no anel
+			//existem mais nós no anel
 			putdebug("saida abrupta");
+
+			// enviar mensagem com os seus dados ao predi
+			if(sendMessageEND(curNode.id, curNode.ip, curNode.port, prediNode.fd, iAmStartNode) == -1) {
+				putdebugError("rebuild", "envio de mensagem END a predi falhou");
+				return -1;
+			}
 
 			if(!iAmStartNode) {
 				//obter nó de arranque do anel
@@ -504,25 +536,63 @@ int rebuild() {
 					putdebug("nó de arranque está activo");
 				}
 			}
-
-			// enviar mensagem com os seus dados ao predi
-			if(sendMessageEND(curNode.id, curNode.ip, curNode.port, prediNode.fd) == -1) {
-				putdebugError("rebuild", "envio de mensagem END a predi falhou");
-				return -1;
-			}
-
 		}
 	}
 
 	return error;
 }
 
-int handleEND(int id, const char *ip, const char *port) {
+int handleEND(int id, const char *ip, const char *port, int start) {
 	int error = 0;
 
 	if(prediNode.fd == -1) {  // testar se so o nó solto no anel
 		//sou o nó solto no anel
 		putdebug("sou a ponta solta no anel");
+
+		if(!start && !iAmStartNode) {
+			putdebug("anel perdeu o nó de arranque");
+
+			int n = curNode.id + 1;		//usar id para ser diferente
+			while(n < (INT_MAX - 1)) {
+				putdebug("tentar registar como anel %d", curRing + n);
+
+				Node startNode;		// nó de arranque
+				int errorCode = getStartNode(curRing + n, &startNode);
+				if(errorCode == -1) {
+					putdebugError("rebuild", "obtencao de nó de arranque falhou");
+					return -1;
+				} else if(errorCode == 0) {
+					//não existe nenhum anel com este id
+
+					//registar anel e como nó de arranque
+					if(registerAsStartingNode(curRing + n, &curNode) == -1) {
+						putdebugError("handleEND", "registo no servidor falhou");
+						return -1;
+					} else {
+						//registo com successo notificar outros nos no anel
+						curRing += n;
+						if(sendMessageRING(succiNode.fd, curRing, curNode.id) == -1) {
+							putdebugError("handleEND", "envio de RING falhou");
+							return -1;
+						} else {
+							putmessage("novo anel %d\n", curRing);
+						}
+					}
+
+				} else {
+					//exprimentar proximo id para o anel
+					n++;
+				}
+			}
+
+			if(n == INT_MAX) {
+				putdebugError("handleEND", "não existe nenhum anel disponivel");
+				//não foi possivel reconstruir o anel
+				curRing = -1;
+				return -1;
+			}
+
+		}
 
 		//estabelecer ligacao com nó recebido
 		int fd = -1;
@@ -540,13 +610,43 @@ int handleEND(int id, const char *ip, const char *port) {
 		//terminar ligação estabelecida
 		closeConnection(&fd);
 
+		putmessage("anel reconstruído com sucesso após saída abrupta\n");
+
 	} else {
 		//não sou o nó solto no anel
 		putdebug("não sou a ponta solta no anel");
 
+		//se for o nó de arranque anunciar que foi encontrado
+		if(iAmStartNode)
+			start = TRUE;
+
 		//retransmitir mensagem para o predi
-		if(sendMessageEND(id, ip, port, prediNode.fd) == -1) {
+		if(sendMessageEND(id, ip, port, prediNode.fd, start) == -1) {
 			putdebugError("handleEND", "envio de mensagem END a predi falhou");
+			return -1;
+		}
+	}
+
+	return error;
+}
+
+int handleRING(int id, int ring) {
+	int error = 0;
+
+	//definir novo id do anel
+	curRing= ring;
+
+	putmessage("novo anel %d\n", curRing);
+	putmessage("anel reconstruído com sucesso após saída abrupta\n");
+
+	if(succiNode.id == id || succiNode.fd == -1) {
+		putdebug("mensagem RING chegou à outra ponta do anel");
+	} else {
+		putdebug("retransmitir RING");
+
+		//retransmitir mensagem
+		if(sendMessageRING(succiNode.fd, curRing, id) == -1) {
+			putdebugError("handleRING", "retransmissao de RING falhou");
 			return -1;
 		}
 	}

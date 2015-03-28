@@ -686,12 +686,29 @@ int sendSUCC(int fd, const Node *succNode) {
 	return error;
 }
 
-int sendMessageEND(int id, const char *ip, const char *port, int fd) {
+int sendMessageEND(int id, const char *ip, const char *port, int fd, int start) {
 	int error = -1;
 
 	//criar mensagem
 	char message[BUFSIZE];
 	sprintf(message, "END %d %s %s\n", id, ip, port);
+
+	if(start) {
+		strcat(message, " START");
+	}
+
+	//enviar mensagem ao predi
+	error = sendMessage(fd, message);
+
+	return error;
+}
+
+int sendMessageRING(int fd, int ring, int id) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "RING %d %d\n", ring, id);
 
 	//enviar mensagem ao predi
 	error = sendMessage(fd, message);

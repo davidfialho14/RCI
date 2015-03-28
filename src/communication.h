@@ -102,6 +102,8 @@ int waitForSUCC(int fd, Node *succNode);
 
 int sendSUCC(int fd, const Node *succNode);
 
-int sendMessageEND(int id, const char *ip, const char *port, int fd);
+int sendMessageEND(int id, const char *ip, const char *port, int fd, int start);
+
+int sendMessageRING(int fd, int ring, int id);
 
 #endif
