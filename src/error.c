@@ -13,7 +13,7 @@ void putdebugError(const char *functionName, const char *format, ...) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
 
-		fprintf(stdout, "ERRO: %s: ", functionName);
+		fprintf(stdout, "\rERRO: %s: ", functionName);
 		vfprintf(stdout, format, argp);
 		if(errno != 0) {
 			fprintf(stdout, ": %s", strerror(errno));
@@ -30,7 +30,7 @@ void putdebug(const char *format, ...) {
 		va_list argp;			//lista de argumentos
 		va_start(argp, format);
 
-		fprintf(stdout, "DEBUG: ");
+		fprintf(stdout, "\rDEBUG: ");
 		vfprintf(stdout, format, argp);
 		fprintf(stdout, "\n");
 		fflush(stdout);
@@ -44,7 +44,7 @@ void puterror(const char *format, ...) {
 	va_list argp;			//lista de argumentos
 	va_start(argp, format);
 
-	fprintf(stderr, "erro: ");
+	fprintf(stderr, "\rerro: ");
 	vfprintf(stderr, format, argp);
 	fflush(stderr);
 
@@ -55,6 +55,7 @@ void putmessage(const char *format, ...) {
 	va_list argp;			//lista de argumentos
 	va_start(argp, format);
 
+	putchar('\r');
 	vfprintf(stdout, format, argp);
 	fflush(stdout);
 
