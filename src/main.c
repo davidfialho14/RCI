@@ -174,6 +174,13 @@ int main(int argc, char const *argv[]) {
 					if(buffer[length - 1] == '\n')
 						buffer[length - 1] = '\0';
 
+					if(strcmp(buffer, "ERROR") == 0) {
+						//houve um erro na comunicação TCP
+						puterror("ocorreu um erro na comunicação entre nós\n");
+						closeConnection(&connectionFd);
+						continue;
+					}
+
 					if(handleMessage(buffer, connectionFd) == -1) {
 						//notificar quem enviou o pedido que ocorreu um erro
 						char answer[] = "ERROR\n";
@@ -192,8 +199,7 @@ int main(int argc, char const *argv[]) {
 						}
 
 						//terminar ligacao
-						close(connectionFd);
-						rmConnection(connectionFd);
+						closeConnection(&connectionFd);
 					}
 				}
 			}
