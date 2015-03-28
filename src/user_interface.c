@@ -220,7 +220,7 @@ int executeUserCommand(const char *input) {
 int insertNode(int ring, int nodeId, int succiId,
 	const char *succiAddress, const char *succiPort);
 int join(int ring, int nodeId, int succiId, const char *succiAddress, const char *succiPort) {
-	int error = -1;
+	int error = 0;
 
 	Node succ;		// informacoes do succi com quem fazer join
 
@@ -299,6 +299,7 @@ int join(int ring, int nodeId, int succiId, const char *succiAddress, const char
 				putmessage("Sugestão: nesse caso escolha outro anel\n");
 				closeConnection(&startNode.fd);
 				return -1;
+
 			} else if(errorCode == -2) {
 				puterror("o anel escolhido está ocupado\n");
 				putmessage("Sugestão 1: espere 2 segundos e volte a tentar\n");
