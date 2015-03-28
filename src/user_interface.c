@@ -420,9 +420,10 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 		//adionar ligacao ao conjunto
 		addConnection(succiFd);
 
-		//definir nó com id e ring indicados
+		//definir nó com id indicado
 		curNode.id = nodeId;
-		curRing = ring;
+		//definir que o nó esta a tentar ser inserido no anel @ring
+		insertingInRing = ring;
 
 		//enviar informacoes do proprio nó
 		if( (error = sendMessageNEW(succiFd)) == -1) {
@@ -434,9 +435,6 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 			strcpy(succiNode.ip, succiAddress);
 			strcpy(succiNode.port, succiPort);
 			succiNode.fd = succiFd;
-
-			putmessage("novo nó inserido no anel %d com succi %d %s %s\n",
-				curRing, succiNode.id, succiNode.ip, succiNode.port);
 		}
 	}
 

@@ -9,4 +9,6 @@ int handleQRY(int searcherId, int searchedId, int *ownerId, char *ownerIp, char 
 
 int rebuild();
 
+extern int insertingInRing;
+
 #endif /* SRC_RING_INTERFACE_H_ */

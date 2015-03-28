@@ -10,6 +10,8 @@
 #include "error.h"
 #include "string_operations.h"
 
+int insertingInRing = -1;
+
 int handleNEW(int id, const char *ip, const char *port, int fd);
 int handleCON(int id, const char *ip, const char *port, int fd);
 int handleID(int id, int fd);
@@ -209,6 +211,14 @@ int handleNEW(int id, const char *ip, const char *port, int fd) {
 				}
 			}
 		} else {
+			if(insertingInRing != -1) {
+				curRing = insertingInRing;
+				insertingInRing = -1;
+
+				putmessage("novo nó inserido no anel %d com succi %d %s %s\n",
+								curRing, succiNode.id, succiNode.ip, succiNode.port);
+			}
+
 			error = 0;
 		}
 
@@ -218,6 +228,14 @@ int handleNEW(int id, const char *ip, const char *port, int fd) {
 			//enviar mensagem de CON ao succi
 			if( (error = sendMessageCON(id, ip, port, prediNode.fd)) == -1) {
 				putdebugError("handleNEW", "mensagem de CON não enviada ao succi");
+			}
+		} else {
+			if(insertingInRing != -1) {
+				curRing = insertingInRing;
+				insertingInRing = -1;
+
+				putmessage("novo nó inserido no anel %d com succi %d %s %s\n",
+								curRing, succiNode.id, succiNode.ip, succiNode.port);
 			}
 		}
 
@@ -246,6 +264,14 @@ int handleCON(int id, const char *ip, const char *port, int fd) {
 		strcpy(prediNode.ip, succiNode.ip);
 		strcpy(prediNode.port, succiNode.port);
 		prediNode.fd = fd;
+
+		if(insertingInRing != -1) {
+			curRing = insertingInRing;
+			insertingInRing = -1;
+
+			putmessage("novo nó inserido no anel %d com succi %d %s %s\n",
+							curRing, succiNode.id, succiNode.ip, succiNode.port);
+		}
 
 		if(prediNode.fd == succiNode.fd) {
 			//penultimo nó saiu do anel - fica apenas este nó no anel
