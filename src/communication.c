@@ -525,6 +525,11 @@ int sendMessage(int fd, const char *message) {
 		ptr += bytesWritten;
 	}
 
+	if(bytesLeft > 0) {
+		putdebug("mensagem nao foi enviada");
+		error = -1;
+	}
+
 	if(error == 0) {
 		putdebug("mensagem enviada para fd %d: %s", fd, message);
 	}

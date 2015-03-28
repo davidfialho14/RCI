@@ -17,6 +17,8 @@
 #include "ring_interface.h"
 #include "user_interface.h"
 
+extern fd_set exceptionFds;
+
 int main(int argc, char const *argv[]) {
 
 	//inicializacao
@@ -34,13 +36,13 @@ int main(int argc, char const *argv[]) {
 	while(!quit) {
 
 		//reinicializar conjunto de fds de leitura
-		FD_ZERO(&readFds);
+		FD_ZERO(&readFds); FD_ZERO(&exceptionFds);
 		//adicionar ligacoes no conjunto de fds
-		copySet(&readFds);
+		copySet(&readFds); copySet(&exceptionFds);
 		//adicionar listen fd ao conjunto de fds
-		FD_SET(curNode.fd, &readFds);
+		FD_SET(curNode.fd, &readFds); FD_SET(curNode.fd, &exceptionFds);
 		//adicionar stdin ao conjunto de fds
-		FD_SET(STDIN_FILENO, &readFds);
+		FD_SET(STDIN_FILENO, &readFds); FD_SET(STDIN_FILENO, &exceptionFds);
 
 		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
@@ -55,7 +57,7 @@ int main(int argc, char const *argv[]) {
 
 		//esperar por descritor pronto para ler
 		putmessage("\r> ");
-		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
+		inputReady = select(maxFd + 1, &readFds, NULL, &exceptionFds, NULL);
 		if(inputReady <= 0) {
 			putdebugError("main", "select falhou");
 			continue;
@@ -135,6 +137,17 @@ int main(int argc, char const *argv[]) {
 						prediNode.fd = -1;
 						prediNode.id = -1;
 						putdebug("ligação terminada com predi");
+
+						if(succiNode.fd == -1 && !iAmStartNode) {
+							//estou sozinha mas não sou o nó de arranque
+							//isto significa que houve uma saida abrupta
+
+							//registar  num novo anel
+							if(registerNewRing() == -1) {
+								putdebugError("handleEND", "não foi possível registar novo anel");
+								return -1;
+							}
+						}
 					}
 
 					if(connectionFd == succiNode.fd) {

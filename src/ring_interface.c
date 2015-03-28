@@ -11,6 +11,7 @@
 #include "string_operations.h"
 
 int insertingInRing = -1;
+fd_set exceptionFds;
 
 int handleNEW(int id, const char *ip, const char *port, int fd);
 int handleCON(int id, const char *ip, const char *port, int fd);
@@ -490,39 +491,13 @@ int rebuild() {
 			putdebug("saida abrupta: nó passa a ser o único nó no anel");
 
 			if(!iAmStartNode) {
-				//registar-se como nó de arranque
-				if(registerAsStartingNode(curRing, &curNode) == -1) {
-					putdebugError("rebuild", "registo no servidor falhou");
+				//registar-se num novo anel
+				if(registerNewRing() == -1) {
+					putdebugError("handleEND", "não foi possível registar novo anel");
 					return -1;
 				}
-			} else {
-				int n = curNode.id + 1;		//usar id para ser diferente
-				while(n < (INT_MAX - 1)) {
-					putdebug("tentar registar como anel %d", curRing + n);
 
-					Node startNode;		// nó de arranque
-					int errorCode = getStartNode(curRing + n, &startNode);
-					if(errorCode == -1) {
-						putdebugError("rebuild", "obtencao de nó de arranque falhou");
-						return -1;
-					} else if(errorCode == 0) {
-						//não existe nenhum anel com este id
-
-						//registar anel e como nó de arranque
-						if(registerAsStartingNode(curRing + n, &curNode) == -1) {
-							putdebugError("handleEND", "registo no servidor falhou");
-							return -1;
-						} else {
-							//registo com successo notificar outros nos no anel
-							curRing += n;
-							putmessage("novo anel %d\n", curRing);
-							break;						}
-
-					} else {
-						//exprimentar proximo id para o anel
-						n++;
-					}
-				}
+				putdebug("registado num novo anel %d", curRing);
 			}
 
 		} else {
@@ -545,53 +520,18 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 
 	if(prediNode.fd == -1) {  // testar se so o nó solto no anel
 		//sou o nó solto no anel
-		putdebug("sou a ponta solta no anel");
+		putdebug("sou a ponta solta no anel (start=%d)", start);
 
 		if(!start && !iAmStartNode) {
 			putdebug("anel perdeu o nó de arranque");
 
-			int n = curNode.id + 1;		//usar id para ser diferente
-			while(n < (INT_MAX - 1)) {
-				int testRing = curRing + n;
-				putdebug("tentar registar como anel %d", testRing);
-
-				Node startNode;		// nó de arranque
-				int errorCode = getStartNode(testRing, &startNode);
-				if(errorCode == -1) {
-					putdebugError("rebuild", "obtencao de nó de arranque falhou");
-					return -1;
-				} else if(errorCode == 0) {
-					//não existe nenhum anel com este id
-
-					//registar anel e como nó de arranque
-					if(registerAsStartingNode(testRing, &curNode) == -1) {
-						putdebugError("handleEND", "registo no servidor falhou");
-						return -1;
-					} else {
-						//registo com successo notificar outros nos no anel
-						curRing = testRing;
-
-						if(sendMessageRING(succiNode.fd, curRing, curNode.id) == -1) {
-							putdebugError("handleEND", "envio de RING falhou");
-							return -1;
-						} else {
-							putmessage("novo anel %d\n", curRing);
-							break;
-						}
-					}
-
-				} else {
-					//exprimentar proximo id para o anel
-					n++;
-				}
-			}
-
-			if(n == INT_MAX) {
-				putdebugError("handleEND", "não existe nenhum anel disponivel");
-				//não foi possivel reconstruir o anel
-				curRing = -1;
+			//registar  num novo anel
+			if(registerNewRing() == -1) {
+				putdebugError("handleEND", "não foi possível registar novo anel");
 				return -1;
 			}
+
+			putdebug("registado num novo anel %d", curRing);
 		}
 
 		//estabelecer ligacao com nó recebido
@@ -619,6 +559,12 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 		//se for o nó de arranque anunciar que foi encontrado
 		if(iAmStartNode)
 			start = TRUE;
+
+		if(FD_ISSET(prediNode.fd, &exceptionFds)) {
+			putdebug("ligacao do predi foi terminada");
+		} else {
+			putdebug("nao indica ligacao perdida");
+		}
 
 		//retransmitir mensagem para o predi
 		if(sendMessageEND(id, ip, port, prediNode.fd, start) == -1) {
@@ -649,6 +595,76 @@ int handleRING(int ring, int id) {
 			putdebugError("handleRING", "retransmissao de RING falhou");
 			return -1;
 		}
+	}
+
+	return error;
+}
+
+int registerNewRing() {
+	int error = 0;
+
+	int registerRing = -1;
+	Node startNode;		// nó de arranque
+	int n = 0;		//usar id para ser diferente
+	while(n < (INT_MAX - 1)) {
+		int testRing = curRing + n;
+		putdebug("tentar registar como anel %d", testRing);
+
+		int errorCode = getStartNode(testRing, &startNode);
+		if(errorCode == -1) {
+			putdebugError("rebuild", "obtencao de nó de arranque falhou");
+			return -1;
+		} else if(errorCode == 0) {
+			//não existe nenhum anel com este id
+			registerRing = testRing;
+			break;
+
+		} else {
+
+			//estabelecer ligacao com nó de arranque registado
+			int fd = -1;
+			if( (fd = connectToNode(startNode.ip, startNode.port)) == -1) {
+				//nó de arranque foi perdido
+				registerRing = testRing;
+				break;
+			} else {
+
+				//terminar ligação
+				close(fd);
+
+				//exprimentar proximo id para o anel
+				n++;
+			}
+		}
+	}
+
+	if(registerRing >= 0) {
+		//registar anel e como nó de arranque
+		if(registerAsStartingNode(registerRing, &curNode) == -1) {
+			putdebugError("handleEND", "registo no servidor falhou");
+			return -1;
+		} else {
+			//registo com successo notificar outros nos no anel
+			curRing = registerRing;
+			iAmStartNode = TRUE;
+
+			if(succiNode.fd != -1) {
+				if(sendMessageRING(succiNode.fd, curRing, curNode.id) == -1) {
+					putdebugError("handleEND", "envio de RING falhou");
+					return -1;
+				} else {
+					putmessage("novo anel %d\n", curRing);
+				}
+			}
+		}
+	}
+
+
+	if(n == INT_MAX) {
+		putdebugError("handleEND", "não existe nenhum anel disponivel");
+		//não foi possivel reconstruir o anel
+		curRing = -1;
+		return -1;
 	}
 
 	return error;
