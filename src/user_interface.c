@@ -435,6 +435,8 @@ int insertNode(int ring, int nodeId, int succiId, const char *succiAddress, cons
 			strcpy(succiNode.ip, succiAddress);
 			strcpy(succiNode.port, succiPort);
 			succiNode.fd = succiFd;
+
+			putmessage("pedido de inserção feito ao anel\n");
 		}
 	}
 

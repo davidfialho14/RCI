@@ -20,6 +20,11 @@ int handleEND(int id, const char *ip, const char *port);
 int handleMessage(const char* message, int fd) {
 	int error = -1;
 
+	if(curRing == -1) {
+		putdebugError("handleMessage", "nó recebeu uma mensagem TCP sem estar inserido em nenhum anel");
+		return -1;
+	}
+
 	char command[BUFSIZE];	//comando da mensagem
 	char arg[5][IPSIZE];	//argumentos da mensagem
 	char extra[BUFSIZE];	//utilizado nao para testar se existe um argumento a mais
