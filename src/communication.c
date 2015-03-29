@@ -185,9 +185,6 @@ int listenSocket() {
 			while(aux != NULL) {
 				if( (curNode.fd = socket(aux->ai_family, aux->ai_socktype, aux->ai_protocol)) != -1) {
 					//criado um socket com sucesso
-					//indicar ao socket para dispensar o porto quando a aplicacao termina
-					int opt = -1;
-					setsockopt(curNode.fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&opt, sizeof(int));
 
 					//fazer bind ao endereco obtido
 					if(bind(curNode.fd, aux->ai_addr,  aux->ai_addrlen) == -1) {
