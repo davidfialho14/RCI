@@ -12,6 +12,6 @@ int rebuild();
 int registerNewRing();
 
 extern int insertingInRing;
-extern fd_set exceptionFds;
+extern fd_set readFds;
 
 #endif /* SRC_RING_INTERFACE_H_ */

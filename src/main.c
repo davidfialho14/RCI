@@ -9,6 +9,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <signal.h>
+
+#define REBUILD_INTERVAL	2
 
 #include "defines.h"
 #include "communication.h"
@@ -17,7 +20,9 @@
 #include "ring_interface.h"
 #include "user_interface.h"
 
-extern fd_set exceptionFds;
+extern fd_set readFds; //conjunto de fds prontos para ler
+
+void rebuildSignal(int signal);
 
 int main(int argc, char const *argv[]) {
 
@@ -31,18 +36,17 @@ int main(int argc, char const *argv[]) {
 	int maxFd = curNode.fd;	//descritor com valor mais elevado
 	char buffer[BUFSIZE];	//buffer utilizado para fazer a leitura dos descritores
 	int inputReady = 0;		//indica se existe input disponivel para ler
-	fd_set readFds;			//conjunto de fds prontos para ler
 	int quit = FALSE;
 	while(!quit) {
 
 		//reinicializar conjunto de fds de leitura
-		FD_ZERO(&readFds); FD_ZERO(&exceptionFds);
+		FD_ZERO(&readFds);
 		//adicionar ligacoes no conjunto de fds
-		copySet(&readFds); copySet(&exceptionFds);
+		copySet(&readFds);
 		//adicionar listen fd ao conjunto de fds
-		FD_SET(curNode.fd, &readFds); FD_SET(curNode.fd, &exceptionFds);
+		FD_SET(curNode.fd, &readFds);
 		//adicionar stdin ao conjunto de fds
-		FD_SET(STDIN_FILENO, &readFds); FD_SET(STDIN_FILENO, &exceptionFds);
+		FD_SET(STDIN_FILENO, &readFds);
 
 		putdebug("CurNode - ring: %d id: %d ip: %s port: %s fd: %d",
 				curRing, curNode.id, curNode.ip, curNode.port, curNode.fd);
@@ -57,7 +61,7 @@ int main(int argc, char const *argv[]) {
 
 		//esperar por descritor pronto para ler
 		putmessage("\r> ");
-		inputReady = select(maxFd + 1, &readFds, NULL, &exceptionFds, NULL);
+		inputReady = select(maxFd + 1, &readFds, NULL, NULL, NULL);
 		if(inputReady <= 0) {
 			putdebugError("main", "select falhou");
 			continue;
@@ -155,27 +159,10 @@ int main(int argc, char const *argv[]) {
 						succiNode.id = -1;
 						putdebug("ligação terminada com succi");
 
-						// possivel tentativa de reconstrucao do anel
-						if(rebuild() == -1) {
-							puterror("não foi possível reconstruir o anel\n");
-							putmessage("vai ser feito um reset ao nó\n");
-
-							//fechar todas as ligações com predi e succi
-							closeConnection(&succiNode.fd);
-							closeConnection(&prediNode.fd);
-
-							curNode.id = succiNode.id = prediNode.id = -1;
-
-							if(iAmStartNode) {
-								//remover anel do servidor
-								unregisterRing(curRing);
-								curRing = -1;
-								iAmStartNode = FALSE;
-							}
-
-						} else {
-							putmessage("foi feita uma reconstrução do anel com sucesso\n");
-						}
+						//colocar um alarme de 2 segundos para garnatir que todas as ligações
+						//que são par ser terminadas têm efeito no estado do nó
+						signal(SIGALRM, rebuildSignal);
+						alarm(REBUILD_INTERVAL);
 					}
 
 				} else {
@@ -223,4 +210,28 @@ int main(int argc, char const *argv[]) {
 	}
 
 	return 0;
+}
+
+void rebuildSignal(int signal) {
+	if(signal == SIGALRM) {
+		// possivel tentativa de reconstrucao do anel
+		if(rebuild() == -1) {
+			puterror("não foi possível reconstruir o anel\n");
+			putmessage("vai ser feito um reset ao nó\n");
+
+			//fechar todas as ligações com predi e succi
+			closeConnection(&succiNode.fd);
+			closeConnection(&prediNode.fd);
+
+			curNode.id = succiNode.id = prediNode.id = -1;
+
+			if(iAmStartNode) {
+				//remover anel do servidor
+				unregisterRing(curRing);
+				curRing = -1;
+				iAmStartNode = FALSE;
+			}
+
+		}
+	}
 }

@@ -11,7 +11,7 @@
 #include "string_operations.h"
 
 int insertingInRing = -1;
-fd_set exceptionFds;
+fd_set readFds;
 
 int handleNEW(int id, const char *ip, const char *port, int fd);
 int handleCON(int id, const char *ip, const char *port, int fd);
@@ -485,7 +485,7 @@ int distance(int srcId, int destId) {
 int rebuild() {
 	int error = 0;
 
-	if(succiNode.fd == -1) {			// ligacao com succi inexistente
+	if(succiNode.fd == -1 || FD_ISSET(prediNode.fd, &readFds)) { // ligacao com succi inexistente
 		if(prediNode.fd == -1) {		// ligacao com predi inexistente
 			//ficou ultimo nó no anel
 			putdebug("saida abrupta: nó passa a ser o único nó no anel");
@@ -499,6 +499,8 @@ int rebuild() {
 
 				putdebug("registado num novo anel %d", curRing);
 			}
+
+			putmessage("anel reconstruído com sucesso após saída abrupta\n");
 
 		} else {
 			//existem mais nós no anel
@@ -518,7 +520,7 @@ int rebuild() {
 int handleEND(int id, const char *ip, const char *port, int start) {
 	int error = 0;
 
-	if(prediNode.fd == -1) {  // testar se so o nó solto no anel
+	if(prediNode.fd == -1 || FD_ISSET(prediNode.fd, &readFds)) {  // testar se so o nó solto no anel
 		//sou o nó solto no anel
 		putdebug("sou a ponta solta no anel (start=%d)", start);
 
@@ -560,12 +562,6 @@ int handleEND(int id, const char *ip, const char *port, int start) {
 		if(iAmStartNode)
 			start = TRUE;
 
-		if(FD_ISSET(prediNode.fd, &exceptionFds)) {
-			putdebug("ligacao do predi foi terminada");
-		} else {
-			putdebug("nao indica ligacao perdida");
-		}
-
 		//retransmitir mensagem para o predi
 		if(sendMessageEND(id, ip, port, prediNode.fd, start) == -1) {
 			putdebugError("handleEND", "envio de mensagem END a predi falhou");
@@ -605,7 +601,7 @@ int registerNewRing() {
 
 	int registerRing = -1;
 	Node startNode;		// nó de arranque
-	int n = 0;		//usar id para ser diferente
+	int n = curNode.id + 1;		//usar id para ser diferente
 	while(n < (INT_MAX - 1)) {
 		int testRing = curRing + n;
 		putdebug("tentar registar como anel %d", testRing);
@@ -625,10 +621,11 @@ int registerNewRing() {
 			int fd = -1;
 			if( (fd = connectToNode(startNode.ip, startNode.port)) == -1) {
 				//nó de arranque foi perdido
+				putdebug("anel esta disponivel");
 				registerRing = testRing;
 				break;
 			} else {
-
+				putdebug("anel nao esta disponivel");
 				//terminar ligação
 				close(fd);
 
