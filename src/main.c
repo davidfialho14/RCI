@@ -9,6 +9,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <signal.h>
+
+#define REBUILD_INTERVAL	2
 
 #include "defines.h"
 #include "communication.h"
@@ -16,6 +19,10 @@
 #include "error.h"
 #include "ring_interface.h"
 #include "user_interface.h"
+
+extern fd_set readFds; //conjunto de fds prontos para ler
+
+void rebuildSignal(int signal);
 
 int main(int argc, char const *argv[]) {
 
@@ -29,7 +36,6 @@ int main(int argc, char const *argv[]) {
 	int maxFd = curNode.fd;	//descritor com valor mais elevado
 	char buffer[BUFSIZE];	//buffer utilizado para fazer a leitura dos descritores
 	int inputReady = 0;		//indica se existe input disponivel para ler
-	fd_set readFds;			//conjunto de fds prontos para ler
 	int quit = FALSE;
 	while(!quit) {
 
@@ -135,6 +141,17 @@ int main(int argc, char const *argv[]) {
 						prediNode.fd = -1;
 						prediNode.id = -1;
 						putdebug("ligação terminada com predi");
+
+						if(succiNode.fd == -1 && !iAmStartNode) {
+							//estou sozinha mas não sou o nó de arranque
+							//isto significa que houve uma saida abrupta
+
+							//registar  num novo anel
+							if(registerNewRing() == -1) {
+								putdebugError("handleEND", "não foi possível registar novo anel");
+								return -1;
+							}
+						}
 					}
 
 					if(connectionFd == succiNode.fd) {
@@ -142,27 +159,10 @@ int main(int argc, char const *argv[]) {
 						succiNode.id = -1;
 						putdebug("ligação terminada com succi");
 
-						// possivel tentativa de reconstrucao do anel
-						if(rebuild() == -1) {
-							puterror("não foi possível reconstruir o anel\n");
-							putmessage("vai ser feito um reset ao nó\n");
-
-							//fechar todas as ligações com predi e succi
-							closeConnection(&succiNode.fd);
-							closeConnection(&prediNode.fd);
-
-							curNode.id = succiNode.id = prediNode.id = -1;
-
-							if(iAmStartNode) {
-								//remover anel do servidor
-								unregisterRing(curRing);
-								curRing = -1;
-								iAmStartNode = FALSE;
-							}
-
-						} else {
-							putmessage("foi feita uma reconstrução do anel com sucesso\n");
-						}
+						//colocar um alarme de 2 segundos para garnatir que todas as ligações
+						//que são par ser terminadas têm efeito no estado do nó
+						signal(SIGALRM, rebuildSignal);
+						alarm(REBUILD_INTERVAL);
 					}
 
 				} else {
@@ -210,4 +210,28 @@ int main(int argc, char const *argv[]) {
 	}
 
 	return 0;
+}
+
+void rebuildSignal(int signal) {
+	if(signal == SIGALRM) {
+		// possivel tentativa de reconstrucao do anel
+		if(rebuild() == -1) {
+			puterror("não foi possível reconstruir o anel\n");
+			putmessage("vai ser feito um reset ao nó\n");
+
+			//fechar todas as ligações com predi e succi
+			closeConnection(&succiNode.fd);
+			closeConnection(&prediNode.fd);
+
+			curNode.id = succiNode.id = prediNode.id = -1;
+
+			if(iAmStartNode) {
+				//remover anel do servidor
+				unregisterRing(curRing);
+				curRing = -1;
+				iAmStartNode = FALSE;
+			}
+
+		}
+	}
 }

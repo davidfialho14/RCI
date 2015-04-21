@@ -522,6 +522,11 @@ int sendMessage(int fd, const char *message) {
 		ptr += bytesWritten;
 	}
 
+	if(bytesLeft > 0) {
+		putdebug("mensagem nao foi enviada");
+		error = -1;
+	}
+
 	if(error == 0) {
 		putdebug("mensagem enviada para fd %d: %s", fd, message);
 	}
@@ -683,12 +688,31 @@ int sendSUCC(int fd, const Node *succNode) {
 	return error;
 }
 
-int sendMessageEND(int id, const char *ip, const char *port, int fd) {
+int sendMessageEND(int id, const char *ip, const char *port, int fd, int start) {
 	int error = -1;
 
 	//criar mensagem
 	char message[BUFSIZE];
-	sprintf(message, "END %d %s %s\n", id, ip, port);
+	sprintf(message, "END %d %s %s", id, ip, port);
+
+	if(start) {
+		strcat(message, " START\n");
+	} else {
+		strcat(message, "\n");
+	}
+
+	//enviar mensagem ao predi
+	error = sendMessage(fd, message);
+
+	return error;
+}
+
+int sendMessageRING(int fd, int ring, int id) {
+	int error = -1;
+
+	//criar mensagem
+	char message[BUFSIZE];
+	sprintf(message, "RING %d %d\n", ring, id);
 
 	//enviar mensagem ao predi
 	error = sendMessage(fd, message);
